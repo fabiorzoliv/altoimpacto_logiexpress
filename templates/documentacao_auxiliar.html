@@ -2,77 +2,500 @@
 {% block title %}Documentação Auxiliar{% endblock %}
 {% block content %}
 <div class="container-fluid py-3">
+
     <div class="mb-4">
-        <h1>Documentação Auxiliar</h1>
-        <p class="text-secondary">Conceitos essenciais para acompanhar o projeto mesmo sem ter cursado todas as disciplinas envolvidas.</p>
+        <h1>Documentação Auxiliar — LOGIEXPRESS 1.1</h1>
+        <p class="text-secondary mb-1">
+            Conceitos essenciais para acompanhar o desenvolvimento do projeto, mesmo sem ter cursado
+            todas as disciplinas envolvidas.
+        </p>
+        <p class="text-secondary mb-0">
+            <strong>Como estudar:</strong> abra um conceito, leia o contexto, observe o diagrama e,
+            depois, procure o mesmo conceito no código do LOGIEXPRESS.
+        </p>
     </div>
 
+    <div class="alert alert-primary">
+        <strong>Objetivo desta página:</strong>
+        criar uma ponte entre a teoria e aquilo que você está vendo no projeto.
+        Aqui não é necessário decorar comandos. O importante é entender
+        <strong>para que cada tecnologia existe, onde ela aparece e como as peças trabalham juntas.</strong>
+    </div>
+
+    {% macro imagem(titulo, caixas, rodape) %}
+    <div class="my-3 border rounded bg-light p-2 overflow-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="230" viewBox="0 0 1100 230" style="max-width:100%;height:auto">
+            <rect width="1100" height="230" rx="12" fill="#f8fafc"/>
+            <text x="550" y="32" text-anchor="middle" font-family="Arial" font-size="20" font-weight="700" fill="#173f6b">{{ titulo }}</text>
+            {% for caixa in caixas %}
+                {% set x = 25 + loop.index0 * 270 %}
+                <rect x="{{ x }}" y="65" width="220" height="105" rx="14" fill="#ffffff" stroke="#9ab7d0" stroke-width="2"/>
+                <text x="{{ x + 110 }}" y="94" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="#245b9e">{{ caixa[0] }}</text>
+                <text x="{{ x + 110 }}" y="120" text-anchor="middle" font-family="Arial" font-size="13" fill="#334155">{{ caixa[1] }}</text>
+                <text x="{{ x + 110 }}" y="143" text-anchor="middle" font-family="Arial" font-size="13" fill="#334155">{{ caixa[2] }}</text>
+                {% if not loop.last %}
+                    <path d="M{{ x + 220 }} 117 H{{ x + 258 }}" stroke="#64748b" stroke-width="3"/>
+                    <path d="M{{ x + 250 }} 109 L{{ x + 260 }} 117 L{{ x + 250 }} 125" fill="none" stroke="#64748b" stroke-width="3"/>
+                {% endif %}
+            {% endfor %}
+            <text x="550" y="205" text-anchor="middle" font-family="Arial" font-size="14" fill="#475569">{{ rodape }}</text>
+        </svg>
+    </div>
+    {% endmacro %}
+
     <div class="accordion" id="conceitos">
-        {% set itens = [
-            ('rad','RAD — Rapid Application Development','Desenvolvimento rápido de aplicações. A ideia é construir, testar, obter retorno e evoluir o software em ciclos curtos. No LOGIEXPRESS, os alunos recebem um sistema funcional e desenvolvem novas funcionalidades a partir de requisitos.'),
-            ('python','Python','Linguagem utilizada no backend. No projeto, Python controla as regras de negócio, recebe requisições, consulta o banco e prepara os dados enviados às páginas.'),
-            ('flask','Flask','Microframework web para Python. Ele permite criar rotas como /clientes, receber requisições HTTP e retornar páginas HTML.'),
-            ('git','Git','Sistema de controle de versão. Registra alterações no código e permite trabalhar com branches, commits, comparação de versões e integração de mudanças.'),
-            ('github','GitHub','Plataforma onde o repositório do projeto fica hospedado. É também o local onde os Pull Requests são criados e revisados.'),
-            ('codespaces','GitHub Codespaces','Ambiente de desenvolvimento na nuvem. O aluno pode editar, executar e testar o projeto pelo navegador sem precisar configurar toda a máquina local.'),
-            ('branch','Branch','Uma linha independente de desenvolvimento. Em vez de todos alterarem a branch principal, cada grupo cria uma branch própria para sua funcionalidade.'),
-            ('commit','Commit','Registro de uma unidade de alteração. Um bom commit explica o que foi alterado e cria um ponto de recuperação no histórico.'),
-            ('pr','Pull Request','Pedido para incorporar uma branch a outra. No projeto, o grupo desenvolve e testa sua funcionalidade, faz push e abre um PR para que a integração seja revisada.'),
-            ('html','HTML','Linguagem de marcação usada para estruturar a página: títulos, tabelas, formulários, botões e demais elementos.'),
-            ('css','CSS','Responsável pela aparência da aplicação: espaçamento, tamanhos, cores, layout, responsividade e identidade visual.'),
-            ('sqlite','SQLite','Banco de dados relacional usado localmente pelo LOGIEXPRESS. É um arquivo de banco, simples para aulas e protótipos.'),
-            ('sqlalchemy','SQLAlchemy','Biblioteca ORM. Permite trabalhar com tabelas e registros usando classes e objetos Python, reduzindo a necessidade de escrever SQL diretamente em várias partes da aplicação.'),
-            ('crud','CRUD','Conjunto de operações Create, Read, Update e Delete: criar, consultar, atualizar e excluir registros.'),
-            ('http','HTTP — GET e POST','Protocolo utilizado na comunicação web. GET é usado principalmente para solicitar dados ou páginas; POST é usado para enviar dados para processamento.'),
-            ('jinja','Jinja2','Motor de templates utilizado pelo Flask. Permite inserir dados Python no HTML e criar estruturas como loops e condicionais.'),
-            ('bootstrap','Bootstrap','Biblioteca CSS utilizada para acelerar a construção da interface, especialmente tabelas, formulários, botões, cards e responsividade.')
-        ] %}
-        {% for id, titulo, resumo in itens %}
+
+        <!-- RAD -->
         <div class="accordion-item">
-            <h2 class="accordion-header" id="heading-{{ id }}">
-                <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ id }}">{{ titulo }}</button>
+            <h2 class="accordion-header" id="heading-rad">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-rad">
+                    1. RAD — Rapid Application Development
+                </button>
             </h2>
-            <div id="collapse-{{ id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#conceitos">
+            <div id="collapse-rad" class="accordion-collapse collapse show" data-bs-parent="#conceitos">
                 <div class="accordion-body">
-                    <p>{{ resumo }}</p>
-                    {% if id == 'branch' %}
-                    <h5>Como usaremos</h5>
-                    <pre class="bg-light p-3 rounded">main       → versão estável
-   ↓
-develop    → integração das equipes
-   ↓
-feature/grupo-01-manutencao
-feature/grupo-02-combustivel
-feature/grupo-03-ocorrencias
-...</pre>
-                    <p>Cada grupo trabalha na sua branch. Isso reduz a possibilidade de uma equipe sobrescrever o trabalho da outra.</p>
-                    {% elif id == 'commit' %}
-                    <h5>Exemplo</h5>
-                    <pre class="bg-light p-3 rounded">git add .
-git commit -m "feat: adiciona controle de manutenção"</pre>
-                    <p>O commit deve representar uma alteração coerente. Evite mensagens vagas como <code>alterações</code> ou <code>teste</code>.</p>
-                    {% elif id == 'pr' %}
-                    <h5>Fluxo</h5>
-                    <pre class="bg-light p-3 rounded">Branch do grupo
-      ↓
-Código desenvolvido
-      ↓
-Teste local
-      ↓
-git add / commit
-      ↓
-git push
-      ↓
-Pull Request
-      ↓
-Revisão
-      ↓
-Merge em develop</pre>
-                    {% endif %}
+                    <p><strong>RAD</strong> significa Desenvolvimento Rápido de Aplicações. É uma abordagem que privilegia ciclos curtos de desenvolvimento, prototipação, testes e retorno dos usuários.</p>
+                    {{ imagem('RAD — construir, testar e evoluir', [
+                        ('REQUISITO','O que precisa','ser resolvido'),
+                        ('DESENVOLVIMENTO','Construir uma','primeira solução'),
+                        ('TESTE','Executar e','encontrar problemas'),
+                        ('FEEDBACK','Aprender e','melhorar')
+                    ], 'O ciclo se repete: a aplicação evolui em pequenas entregas.') }}
+                    <h5>Contexto no LOGIEXPRESS</h5>
+                    <p>Você não começará um sistema do zero. O LOGIEXPRESS já possui banco, telas, rotas, dashboard e CRUD. A atividade consiste em compreender a base e evoluí-la com novas funcionalidades.</p>
+                    <ul>
+                        <li>receber um requisito;</li>
+                        <li>entender o código existente;</li>
+                        <li>implementar uma pequena evolução;</li>
+                        <li>testar no navegador;</li>
+                        <li>registrar a alteração no Git;</li>
+                        <li>enviar a alteração para revisão por Pull Request.</li>
+                    </ul>
+                    <div class="alert alert-success mb-0"><strong>Ideia principal:</strong> RAD não significa fazer de qualquer jeito. Significa aprender rapidamente com ciclos curtos e controlados.</div>
                 </div>
             </div>
         </div>
-        {% endfor %}
+
+        <!-- PYTHON -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-python">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-python">2. Python</button>
+            </h2>
+            <div id="collapse-python" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>Python é a linguagem utilizada no backend do LOGIEXPRESS. É nela que estão as regras de negócio, consultas ao banco, tratamento dos formulários e preparação dos dados que serão apresentados.</p>
+                    {{ imagem('Python no LOGIEXPRESS', [
+                        ('ENTRADA','request HTTP','formulário'),
+                        ('PYTHON','rota + lógica','validação'),
+                        ('DADOS','consulta ou','alteração'),
+                        ('SAÍDA','template','HTML')
+                    ], 'O Python funciona como a camada que coordena o processamento da aplicação.') }}
+                    <h5>Onde procurar no projeto?</h5>
+                    <p>O principal arquivo é <code>app.py</code>. Procure por <code>app = Flask(__name__)</code>, pelos modelos <code>db.Model</code> e pelas funções decoradas com <code>@app.route()</code>.</p>
+                    <h5>Exemplo</h5>
+                    <pre class="bg-light p-3 rounded">clientes = Cliente.query.order_by(Cliente.id.desc()).all()
+return render_template("clientes/list.html", clientes=clientes)</pre>
+                    <p class="mb-0">Neste exemplo, Python consulta o banco e envia o resultado para o template.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLASK -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-flask">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-flask">3. Flask</button>
+            </h2>
+            <div id="collapse-flask" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>Flask é o framework web usado para transformar Python em uma aplicação acessível pelo navegador. Ele recebe requisições HTTP, identifica a rota correspondente e executa a função definida pelo desenvolvedor.</p>
+                    {{ imagem('Flask conecta URL, função e resposta', [
+                        ('NAVEGADOR','GET /clientes','ou POST'),
+                        ('ROTA','@app.route','define o caminho'),
+                        ('FUNÇÃO','Python','processa'),
+                        ('RESPOSTA','HTML / redirect','retorna')
+                    ], 'A rota é a porta de entrada para uma funcionalidade web.') }}
+                    <h5>Exemplo real</h5>
+                    <pre class="bg-light p-3 rounded">@app.route("/clientes")
+def clientes_list():
+    clientes = Cliente.query.order_by(Cliente.id.desc()).all()
+    return render_template("clientes/list.html", clientes=clientes)</pre>
+                    <p>Quando o navegador solicita <code>/clientes</code>, Flask encontra <code>clientes_list()</code>. A função consulta os dados e retorna a página.</p>
+                    <div class="alert alert-warning mb-0"><strong>Para o exercício:</strong> antes de criar uma rota nova, procure uma rota existente que faça algo parecido.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GIT -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-git">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-git">4. Git</button>
+            </h2>
+            <div id="collapse-git" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>Git é um sistema de controle de versão. Ele registra a evolução do código e permite saber quais alterações foram feitas, quando foram feitas e em qual sequência.</p>
+                    {{ imagem('Git registra a evolução do código', [
+                        ('ARQUIVOS','alteração','no projeto'),
+                        ('STAGE','git add','prepara'),
+                        ('COMMIT','git commit','registra'),
+                        ('HISTÓRICO','versões','recuperáveis')
+                    ], 'Git não é o GitHub: Git controla versões; GitHub hospeda e colabora sobre o repositório.') }}
+                    <h5>Por que isso importa na aula?</h5>
+                    <p>Como vários grupos desenvolverão funcionalidades diferentes, precisamos de um histórico organizado. O Git permite separar trabalhos, comparar alterações e recuperar versões.</p>
+                    <pre class="bg-light p-3 rounded">git status
+git add .
+git commit -m "feat: adiciona controle de manutenção"</pre>
+                    <p class="mb-0"><strong>Regra prática:</strong> faça commits pequenos e coerentes. Um commit deve representar uma alteração que faça sentido explicar para outra pessoa.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GITHUB -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-github">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-github">5. GitHub</button>
+            </h2>
+            <div id="collapse-github" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>GitHub é a plataforma onde o repositório do LOGIEXPRESS está hospedado. Ele permite compartilhar o código, trabalhar com branches, Issues, Pull Requests e acompanhar a evolução do projeto.</p>
+                    {{ imagem('GitHub como ponto de colaboração', [
+                        ('REPOSITÓRIO','código','central'),
+                        ('BRANCHES','trabalhos','isolados'),
+                        ('ISSUES','tarefas','requisitos'),
+                        ('PR','revisão','integração')
+                    ], 'No projeto, o GitHub é o ambiente de colaboração entre os grupos.') }}
+                    <h5>GitHub no LOGIEXPRESS</h5>
+                    <p>O repositório contém o código que os alunos acessam pelo Codespaces. A branch de cada grupo será usada para desenvolver uma funcionalidade sem trabalhar diretamente na versão principal.</p>
+                    <div class="alert alert-info mb-0"><strong>Atenção:</strong> GitHub não substitui o Git. O Git registra as versões localmente; o GitHub permite armazenar, compartilhar e colaborar sobre esse histórico.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CODESPACES -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-codespaces">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-codespaces">6. GitHub Codespaces</button>
+            </h2>
+            <div id="collapse-codespaces" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>GitHub Codespaces é um ambiente de desenvolvimento hospedado na nuvem. O aluno acessa o projeto pelo navegador e recebe um ambiente com editor, terminal e recursos para executar a aplicação.</p>
+                    {{ imagem('Codespaces — desenvolvimento no navegador', [
+                        ('GITHUB','repositório','do projeto'),
+                        ('CODESPACE','VS Code Web','+ terminal'),
+                        ('PYTHON','executa','Flask'),
+                        ('NAVEGADOR','acessa a','aplicação')
+                    ], 'O ambiente reduz a necessidade de configurar Python, banco e ferramentas manualmente no computador.') }}
+                    <h5>O que você verá?</h5>
+                    <ul>
+                        <li><strong>Explorer:</strong> arquivos do projeto;</li>
+                        <li><strong>Editor:</strong> local para alterar o código;</li>
+                        <li><strong>Terminal:</strong> execução de comandos Git e Python;</li>
+                        <li><strong>Portas:</strong> acesso à aplicação que está rodando.</li>
+                    </ul>
+                    <p class="mb-0"><strong>Objetivo pedagógico:</strong> concentrar a aula no desenvolvimento da aplicação, e não na configuração da máquina.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BRANCH -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-branch">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-branch">7. Branch</button>
+            </h2>
+            <div id="collapse-branch" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>Uma branch é uma linha independente de desenvolvimento. Ela permite que uma funcionalidade seja desenvolvida sem alterar diretamente a branch que representa a versão integrada.</p>
+                    {{ imagem('Branches isolam os trabalhos', [
+                        ('main','versão','estável'),
+                        ('develop','integração','das equipes'),
+                        ('feature','funcionalidade','do grupo'),
+                        ('PR','revisão','e integração')
+                    ], 'Cada grupo desenvolve sua funcionalidade em uma branch própria.') }}
+                    <h5>Exemplo utilizado na prática</h5>
+                    <pre class="bg-light p-3 rounded">main
+  ↓
+develop
+  ↓
+feature/manutencao-veiculos</pre>
+                    <p>O grupo pode trabalhar, testar e fazer vários commits na sua branch. Quando terminar, envia a branch ao GitHub e abre um Pull Request para integração.</p>
+                    <div class="alert alert-success mb-0"><strong>Boa prática:</strong> o nome da branch deve deixar claro qual funcionalidade está sendo desenvolvida.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMMIT -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-commit">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-commit">8. Commit</button>
+            </h2>
+            <div id="collapse-commit" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>Commit é um registro permanente de uma alteração no histórico Git. Pense nele como uma fotografia identificada do estado do código naquele momento.</p>
+                    {{ imagem('Commit — ponto de controle do projeto', [
+                        ('ANTES','código','anterior'),
+                        ('ALTERAÇÃO','arquivos','modificados'),
+                        ('COMMIT','mensagem','descritiva'),
+                        ('HISTÓRICO','ponto','recuperável')
+                    ], 'Commits bem descritos facilitam revisão, rastreamento e recuperação.') }}
+                    <h5>Exemplo</h5>
+                    <pre class="bg-light p-3 rounded">git add .
+git commit -m "feat: adiciona controle de manutenção"</pre>
+                    <p>Evite mensagens como <code>teste</code>, <code>alterações</code> ou <code>coisas</code>. Prefira uma mensagem que explique a mudança.</p>
+                    <p class="mb-0"><strong>Importante:</strong> commit ainda não significa que o código foi enviado ao GitHub. Para isso existe o <code>git push</code>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PR -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-pr">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-pr">9. Pull Request</button>
+            </h2>
+            <div id="collapse-pr" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>Pull Request (PR) é uma solicitação para integrar o trabalho de uma branch em outra. Além de integrar código, o PR cria um ponto de revisão e discussão.</p>
+                    {{ imagem('Pull Request — da funcionalidade à integração', [
+                        ('FEATURE','grupo','desenvolve'),
+                        ('PUSH','branch','no GitHub'),
+                        ('PR','comparar','e revisar'),
+                        ('MERGE','integrar','em develop')
+                    ], 'O PR funciona como uma etapa de controle antes da integração.') }}
+                    <h5>Fluxo da atividade</h5>
+                    <ol>
+                        <li>criar branch da funcionalidade;</li>
+                        <li>desenvolver;</li>
+                        <li>testar;</li>
+                        <li>commit;</li>
+                        <li>push;</li>
+                        <li>abrir Pull Request;</li>
+                        <li>revisar;</li>
+                        <li>integrar.</li>
+                    </ol>
+                    <div class="alert alert-warning mb-0"><strong>Não abra o PR apenas porque o código roda.</strong> Verifique também requisito, interface, dados, mensagens de erro e comportamento esperado.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HTML -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-html">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-html">10. HTML</button>
+            </h2>
+            <div id="collapse-html" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>HTML é a linguagem de marcação que estrutura o conteúdo da página. Ele define títulos, parágrafos, tabelas, formulários, botões, links e outros elementos.</p>
+                    {{ imagem('HTML organiza o conteúdo da página', [
+                        ('ESTRUTURA','html / body','layout'),
+                        ('CONTEÚDO','h1 / p','texto'),
+                        ('DADOS','table / form','informação'),
+                        ('AÇÃO','button / a','interação')
+                    ], 'HTML define o que existe na página; CSS define principalmente como isso aparece.') }}
+                    <h5>Exemplo no LOGIEXPRESS</h5>
+                    <pre class="bg-light p-3 rounded">&lt;h1&gt;Clientes&lt;/h1&gt;
+&lt;table class="table"&gt;
+    ...
+&lt;/table&gt;</pre>
+                    <p class="mb-0">Nos exercícios, você provavelmente precisará duplicar ou adaptar páginas existentes para apresentar a nova funcionalidade.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CSS -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-css">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-css">11. CSS</button>
+            </h2>
+            <div id="collapse-css" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>CSS controla a apresentação visual da aplicação: espaçamento, tamanho, alinhamento, tipografia, bordas, responsividade e organização dos elementos.</p>
+                    {{ imagem('CSS transforma estrutura em interface', [
+                        ('HTML','estrutura','dos elementos'),
+                        ('CSS','regras','visuais'),
+                        ('LAYOUT','grid / flex','espaçamento'),
+                        ('INTERFACE','visual','final')
+                    ], 'No LOGIEXPRESS, boa parte da identidade visual compartilhada está em static/style.css.') }}
+                    <h5>Exemplo</h5>
+                    <pre class="bg-light p-3 rounded">.metric-card {
+    border-radius: 12px;
+    padding: 16px;
+}</pre>
+                    <p>Você não precisa alterar CSS para todo exercício. Faça isso somente quando a nova funcionalidade exigir novos componentes ou ajustes de interface.</p>
+                    <div class="alert alert-info mb-0"><strong>Dica:</strong> procure primeiro uma classe existente que já produza o visual desejado antes de criar uma regra nova.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQLITE -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-sqlite">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-sqlite">12. SQLite</button>
+            </h2>
+            <div id="collapse-sqlite" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>SQLite é um banco de dados relacional que pode ser armazenado em um arquivo. No ambiente local do LOGIEXPRESS, ele permite que os alunos executem a aplicação sem instalar um servidor de banco separado.</p>
+                    {{ imagem('SQLite no ambiente de desenvolvimento', [
+                        ('FLASK','aplicação','Python'),
+                        ('SQLALCHEMY','ORM','consultas'),
+                        ('SQLITE','arquivo','logiexpress.db'),
+                        ('DADOS','tabelas','registros')
+                    ], 'SQLite é adequado para o ambiente didático local; a configuração de produção usa PostgreSQL.') }}
+                    <h5>O que existe dentro?</h5>
+                    <p>O banco possui tabelas correspondentes aos modelos, como Clientes, Pedidos, Entregas, Veículos, Produtos e Ocorrências.</p>
+                    <p class="mb-0">O aluno normalmente não precisa abrir o arquivo do banco manualmente. As consultas são feitas pelo SQLAlchemy no código Python.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQLALCHEMY -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-sqlalchemy">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-sqlalchemy">13. SQLAlchemy</button>
+            </h2>
+            <div id="collapse-sqlalchemy" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>SQLAlchemy é a biblioteca utilizada para trabalhar com o banco de dados a partir do Python. O LOGIEXPRESS utiliza seu recurso ORM, no qual modelos Python representam tabelas.</p>
+                    {{ imagem('SQLAlchemy faz a ponte entre Python e banco', [
+                        ('PYTHON','Cliente','Pedido'),
+                        ('ORM','Modelos +','queries'),
+                        ('BANCO','tabelas','registros'),
+                        ('RESULTADO','objetos','Python')
+                    ], 'O ORM permite que o código trabalhe com os dados sem escrever SQL manualmente em cada operação.') }}
+                    <h5>Exemplo</h5>
+                    <pre class="bg-light p-3 rounded">clientes = Cliente.query.filter_by(ativo=True).all()
+
+db.session.add(cliente)
+db.session.commit()</pre>
+                    <p><code>query</code> consulta. <code>filter_by</code> aplica um filtro. <code>add</code> prepara um novo registro para gravação. <code>commit</code> confirma a transação.</p>
+                    <div class="alert alert-warning mb-0"><strong>Para o aluno:</strong> não é necessário dominar SQLAlchemy inteiro. Aprenda a reconhecer os padrões já usados no projeto e adaptá-los.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRUD -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-crud">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-crud">14. CRUD</button>
+            </h2>
+            <div id="collapse-crud" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>CRUD representa quatro operações básicas sobre dados: <strong>Create, Read, Update e Delete</strong>.</p>
+                    {{ imagem('CRUD — ciclo básico de um cadastro', [
+                        ('CREATE','criar','registro'),
+                        ('READ','consultar','registro'),
+                        ('UPDATE','alterar','registro'),
+                        ('DELETE','excluir','registro')
+                    ], 'O CRUD de Clientes é o exemplo de referência do LOGIEXPRESS.') }}
+                    <table class="table table-bordered align-middle">
+                        <thead><tr><th>Operação</th><th>Exemplo</th><th>No LOGIEXPRESS</th></tr></thead>
+                        <tbody>
+                            <tr><td>Create</td><td>Cadastrar cliente</td><td><code>/clientes/novo</code></td></tr>
+                            <tr><td>Read</td><td>Listar cliente</td><td><code>/clientes</code></td></tr>
+                            <tr><td>Update</td><td>Editar cliente</td><td><code>/clientes/&lt;id&gt;/editar</code></td></tr>
+                            <tr><td>Delete</td><td>Excluir cliente</td><td><code>/clientes/&lt;id&gt;/excluir</code></td></tr>
+                        </tbody>
+                    </table>
+                    <p class="mb-0"><strong>Importante:</strong> CRUD não significa que toda exclusão deve ser permitida. O sistema pode possuir regras de negócio, como a regra que impede excluir cliente com pedidos relacionados.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HTTP -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-http">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-http">15. HTTP — GET e POST</button>
+            </h2>
+            <div id="collapse-http" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>HTTP é o protocolo utilizado para comunicação entre navegador e aplicação web. No LOGIEXPRESS, os métodos que mais aparecerão nos exercícios são GET e POST.</p>
+                    {{ imagem('GET e POST têm papéis diferentes', [
+                        ('GET','pedir','uma página/dados'),
+                        ('FORM','usuário','preenche'),
+                        ('POST','enviar','dados'),
+                        ('FLASK','validar','e processar')
+                    ], 'GET costuma consultar/exibir; POST costuma enviar dados para processamento.') }}
+                    <h5>Exemplo</h5>
+                    <pre class="bg-light p-3 rounded">@app.route("/clientes/novo", methods=["GET", "POST"])
+def clientes_novo():
+    if request.method == "POST":
+        ...
+    return render_template("clientes/form.html")</pre>
+                    <p>Na primeira visita, GET exibe o formulário. Depois que o usuário envia, POST entrega os dados para a função.</p>
+                    <div class="alert alert-info mb-0"><strong>Não confunda:</strong> HTTP POST envia dados para a aplicação. <code>git push</code> envia commits para o repositório remoto.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JINJA -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-jinja">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-jinja">16. Jinja2</button>
+            </h2>
+            <div id="collapse-jinja" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>Jinja2 é o mecanismo de templates utilizado pelo Flask. Ele permite que dados preparados pelo Python sejam incorporados ao HTML.</p>
+                    {{ imagem('Jinja2 transforma dados Python em HTML', [
+                        ('PYTHON','variável','clientes'),
+                        ('JINJA2','{{ cliente.nome }}','{% for %}'),
+                        ('HTML','tabela','cards'),
+                        ('NAVEGADOR','página','renderizada')
+                    ], 'O template não busca sozinho o banco: a rota precisa enviar os dados.') }}
+                    <h5>Exemplos</h5>
+                    <pre class="bg-light p-3 rounded">{% raw %}{{ cliente.nome }}
+
+{% for cliente in clientes %}
+    {{ cliente.nome }}
+{% endfor %}
+
+{% if cliente.ativo %}
+    Ativo
+{% endif %}{% endraw %}</pre>
+                    <p class="mb-0">No LOGIEXPRESS, os templates normalmente ficam em <code>templates/</code> e podem herdar o layout de <code>base.html</code>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOOTSTRAP -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-bootstrap">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bootstrap">17. Bootstrap</button>
+            </h2>
+            <div id="collapse-bootstrap" class="accordion-collapse collapse" data-bs-parent="#conceitos">
+                <div class="accordion-body">
+                    <p>Bootstrap é uma biblioteca de interface que fornece classes CSS e componentes prontos para acelerar a construção de páginas web responsivas.</p>
+                    {{ imagem('Bootstrap acelera a construção da interface', [
+                        ('CLASSES','container','row / col'),
+                        ('COMPONENTES','card','alert / button'),
+                        ('FORMULÁRIOS','input','select / table'),
+                        ('RESPONSIVO','desktop','mobile')
+                    ], 'No LOGIEXPRESS, Bootstrap trabalha junto com o CSS próprio em static/style.css.') }}
+                    <h5>Exemplo</h5>
+                    <pre class="bg-light p-3 rounded">&lt;div class="card"&gt;
+    &lt;div class="card-body"&gt;
+        &lt;h5 class="card-title"&gt;Clientes&lt;/h5&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                    <p>Em vez de criar todo o estilo de um card do zero, usamos componentes e classes já disponíveis.</p>
+                    <div class="alert alert-success mb-0"><strong>Boa prática:</strong> utilize Bootstrap para a estrutura e componentes comuns e o <code>style.css</code> do projeto para a identidade visual específica do LOGIEXPRESS.</div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <div class="card mt-4 border-success">
+        <div class="card-body">
+            <h2 class="h4">Mapa final — como tudo se conecta</h2>
+            {{ imagem('Visão integrada do LOGIEXPRESS', [
+                ('NAVEGADOR','HTML + CSS','Bootstrap'),
+                ('FLASK','Python','rotas'),
+                ('JINJA2','dados →','HTML'),
+                ('BANCO','SQLite /','PostgreSQL')
+            ], 'Git, GitHub, branches, commits e Pull Requests controlam a evolução do código.') }}
+            <p class="mb-0">
+                <strong>Para a prática:</strong> você não precisa dominar todas essas tecnologias antes de começar.
+                Use esta página como referência, copie padrões do projeto existente com entendimento e avance por pequenas etapas.
+            </p>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

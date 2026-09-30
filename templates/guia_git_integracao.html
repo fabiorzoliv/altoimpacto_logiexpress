@@ -2,21 +2,50 @@
 {% block title %}Guia Git e Integração{% endblock %}
 {% block content %}
 <div class="container-fluid py-3">
-  <h1>Guia Git — Trabalho em Equipe e Integração</h1>
-  <p class="text-secondary">Este guia explica exatamente como o código produzido pelos grupos chegará ao projeto principal.</p>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+      <h1>Guia Git — Trabalho em Equipe e Integração</h1>
+      <p class="text-secondary mb-0">
+        Guia prático para entender branches, commits, push, Pull Requests,
+        conflitos e diagnóstico dos principais problemas encontrados durante o desenvolvimento colaborativo.
+      </p>
+    </div>
+    <span class="badge text-bg-dark fs-6 mt-2 mt-md-0">Git • GitHub • Integração</span>
+  </div>
+
+  <div class="alert alert-primary shadow-sm">
+    <h2 class="h5">🎯 Objetivo</h2>
+    <p class="mb-0">
+      O objetivo deste guia é ajudar você a compreender <strong>o que está acontecendo com o código
+      durante o trabalho em equipe</strong>. O roteiro de desenvolvimento mostra o passo a passo da atividade;
+      este guia explica os conceitos e como investigar problemas quando algo não acontece como esperado.
+    </p>
+  </div>
 
   <div class="card mb-4">
     <div class="card-body">
-      <h2 class="h4">1. Por que não trabalhar todos na main?</h2>
-      <p>A <code>main</code> representa a versão que deve estar estável. Se dez grupos alterarem diretamente a mesma branch, aumenta o risco de código incompleto, sobrescrita de alterações e conflitos difíceis de resolver.</p>
-      <p>Por isso vamos separar desenvolvimento e versão estável.</p>
+      <h2 class="h4">1. Por que não trabalhar todos na <code>main</code>?</h2>
+      <p>
+        A <code>main</code> representa a versão principal que deve permanecer estável.
+        Se vários grupos alterarem diretamente a mesma branch, aumenta o risco de código incompleto,
+        sobrescrita de alterações e conflitos.
+      </p>
+      <p class="mb-0">
+        Por isso, o projeto utiliza uma estrutura em que as funcionalidades são desenvolvidas
+        em branches próprias e posteriormente integradas em <code>develop</code>.
+      </p>
     </div>
   </div>
 
   <div class="card mb-4 border-primary">
     <div class="card-body">
       <h2 class="h4">2. O que é uma branch?</h2>
-      <p>Uma branch é uma linha independente de desenvolvimento dentro do mesmo repositório. Ela parte de um ponto existente do projeto e permite que uma equipe faça alterações sem modificar imediatamente a versão principal.</p>
+      <p>
+        Uma branch é uma linha independente de desenvolvimento dentro do mesmo repositório.
+        Ela parte de um ponto existente do projeto e permite que uma equipe faça alterações
+        sem modificar imediatamente a versão principal.
+      </p>
       <pre class="bg-light p-3 rounded">main
  │
  └── develop
@@ -25,17 +54,26 @@
       ├── feature/grupo-02-combustivel
       ├── feature/grupo-03-ocorrencias
       └── feature/grupo-04-sla</pre>
-      <p>Pense na branch como uma cópia controlada do caminho de desenvolvimento, conectada ao mesmo histórico do projeto.</p>
+      <p class="mb-0">
+        No laboratório, cada grupo deverá trabalhar em sua própria <code>feature/...</code>.
+      </p>
     </div>
   </div>
 
   <div class="card mb-4">
     <div class="card-body">
       <h2 class="h4">3. O que é um commit?</h2>
-      <p>É um registro no histórico dizendo: <strong>"neste ponto, estas alterações foram gravadas"</strong>.</p>
+      <p>
+        É um registro no histórico do Git dizendo quais alterações foram gravadas naquele ponto.
+      </p>
       <pre class="bg-light p-3 rounded">git add .
-git commit -m "feat: adiciona controle de manutencao"</pre>
-      <p>O primeiro comando prepara as alterações. O segundo grava essas alterações no histórico local.</p>
+git commit -m "Implementa controle de manutenção"</pre>
+      <p>
+        <code>git add</code> prepara as alterações. O <code>git commit</code> registra uma versão no histórico local.
+      </p>
+      <div class="alert alert-info mb-0">
+        <strong>Commit não é push.</strong> O commit registra localmente; o push publica no GitHub.
+      </div>
     </div>
   </div>
 
@@ -44,20 +82,31 @@ git commit -m "feat: adiciona controle de manutencao"</pre>
       <h2 class="h4">4. O que é push?</h2>
       <p>É o envio dos commits da branch local para o GitHub.</p>
       <pre class="bg-light p-3 rounded">git push -u origin feature/grupo-01-manutencao</pre>
-      <p>Depois do push, o professor consegue visualizar a branch no repositório remoto.</p>
+      <p class="mb-0">
+        Depois do push, a branch fica disponível no repositório remoto para revisão e para a criação do Pull Request.
+      </p>
     </div>
   </div>
 
   <div class="card mb-4 border-success">
     <div class="card-body">
       <h2 class="h4">5. O que é Pull Request?</h2>
-      <p>É uma solicitação para incorporar o trabalho de uma branch em outra. No nosso projeto:</p>
+      <p>
+        É uma solicitação para incorporar o trabalho de uma branch em outra.
+        No nosso projeto:
+      </p>
       <pre class="bg-light p-3 rounded">feature/grupo-01-manutencao
               ↓
           Pull Request
               ↓
            develop</pre>
-      <p>O Pull Request permite revisar arquivos, discutir alterações, verificar testes e decidir quando a funcionalidade está pronta para integração.</p>
+      <p>
+        O Pull Request permite revisar arquivos, discutir alterações, verificar testes
+        e decidir quando a funcionalidade está pronta para integração.
+      </p>
+      <div class="alert alert-warning mb-0">
+        <strong>Confira:</strong> na prática, o destino do Pull Request é <code>develop</code>, não <code>main</code>.
+      </div>
     </div>
   </div>
 
@@ -71,35 +120,258 @@ git commit -m "feat: adiciona controle de manutencao"</pre>
         <li>Executar a aplicação.</li>
         <li>Testar a funcionalidade.</li>
         <li>Verificar <code>git status</code>.</li>
+        <li>Conferir as alterações com <code>git diff</code>.</li>
         <li>Adicionar os arquivos com <code>git add</code>.</li>
         <li>Criar um ou mais commits coerentes.</li>
         <li>Enviar a branch com <code>git push</code>.</li>
         <li>Abrir o Pull Request para <code>develop</code>.</li>
-        <li>Aguardar revisão e correções, se necessárias.</li>
+        <li>Aguardar revisão e realizar correções, se necessárias.</li>
         <li>Após aprovação, realizar o merge.</li>
       </ol>
     </div>
   </div>
 
+  <div class="card mb-4 border-info">
+    <div class="card-body">
+      <h2 class="h4">7. Comandos de diagnóstico: primeiro descubra, depois corrija</h2>
+      <p>
+        Quando algo não funcionar, não execute vários comandos aleatoriamente.
+        Primeiro descubra o estado do repositório.
+      </p>
+
+      <h3 class="h5 mt-4"><code>git status</code> — Qual é o estado do projeto?</h3>
+      <pre class="bg-light p-3 rounded">git status</pre>
+      <p>
+        Mostra a branch atual, arquivos modificados, arquivos preparados para commit
+        e situações que exigem atenção.
+      </p>
+
+      <h3 class="h5 mt-4"><code>git branch</code> — Em qual branch estou?</h3>
+      <pre class="bg-light p-3 rounded">git branch</pre>
+      <p>
+        A branch marcada com <code>*</code> é a branch ativa.
+      </p>
+
+      <h3 class="h5 mt-4"><code>git diff</code> — O que foi alterado?</h3>
+      <pre class="bg-light p-3 rounded">git diff</pre>
+      <p class="mb-0">
+        Permite revisar as diferenças no código antes de preparar as alterações com <code>git add</code>.
+      </p>
+    </div>
+  </div>
+
   <div class="card mb-4 border-warning">
     <div class="card-body">
-      <h2 class="h4">7. E se houver conflito?</h2>
-      <p>Conflito acontece quando o Git não consegue decidir automaticamente como combinar duas alterações. Isso é comum quando dois grupos alteram a mesma linha ou região do mesmo arquivo.</p>
-      <p>O procedimento será: identificar o arquivo, abrir os marcadores de conflito, comparar as versões, escolher ou combinar as soluções, testar novamente, criar um commit de resolução e atualizar o Pull Request.</p>
+      <h2 class="h4">8. Situações comuns e como resolver</h2>
+      <p>
+        Durante a prática, mensagens de erro fazem parte do processo de aprendizagem.
+        A sequência recomendada é:
+      </p>
+      <pre class="bg-light p-3 rounded">mensagem
+   ↓
+diagnóstico
+   ↓
+identificar a causa
+   ↓
+executar a correção
+   ↓
+testar novamente</pre>
+
+      <h3 class="h5 mt-4">🔵 8.1 Não sei em qual branch estou</h3>
+      <pre class="bg-light p-3 rounded">git branch</pre>
+      <p>
+        Confirme se o <code>*</code> está na sua branch <code>feature/...</code>.
+        Se estiver em outra branch, não continue alterando o código até corrigir o fluxo.
+      </p>
+
+      <h3 class="h5 mt-4">🟡 8.2 Minha <code>develop</code> está desatualizada</h3>
+      <pre class="bg-light p-3 rounded">git fetch origin
+git checkout develop
+git pull origin develop</pre>
+      <p class="mb-0">
+        Atualize a <code>develop</code> antes de criar uma nova branch de funcionalidade.
+      </p>
+
+      <h3 class="h5 mt-4">🟠 8.3 Não sei o que alterei</h3>
+      <pre class="bg-light p-3 rounded">git status
+git diff</pre>
+      <p class="mb-0">
+        Primeiro identifique os arquivos modificados; depois confira as diferenças.
+      </p>
+
+      <h3 class="h5 mt-4">🟣 8.4 Fiz commit, mas a alteração não aparece no GitHub</h3>
+      <p>
+        O commit fica no histórico local. Para publicar a alteração:
+      </p>
+      <pre class="bg-light p-3 rounded">git push</pre>
+      <div class="alert alert-info mb-0">
+        <strong>Resumo:</strong> commit = histórico local; push = publicação no GitHub.
+      </div>
+
+      <h3 class="h5 mt-4">🔴 8.5 Erro 403 ou permission denied</h3>
+      <pre class="bg-light p-3 rounded">remote: Permission to ... denied
+fatal: unable to access ...</pre>
+      <p>
+        A conta utilizada pode não possuir permissão de escrita no repositório ou branch.
+      </p>
+      <div class="alert alert-danger mb-0">
+        <strong>Procedimento:</strong> pare e informe o professor. Não tente contornar a permissão.
+      </div>
+
+      <h3 class="h5 mt-4">🟤 8.6 Pull Request com destino errado</h3>
+      <p>Confira os campos:</p>
+      <pre class="bg-light p-3 rounded">base: develop
+compare: feature/grupo-01-manutencao</pre>
+      <div class="alert alert-warning mb-0">
+        O fluxo da prática é <strong>feature → Pull Request → develop</strong>.
+      </div>
+
+      <h3 class="h5 mt-4">🟢 8.7 O Pull Request recebeu uma solicitação de correção</h3>
+      <p>
+        Continue na mesma branch. Faça a correção, teste e publique novamente:
+      </p>
+      <pre class="bg-light p-3 rounded">git status
+git diff
+git add .
+git commit -m "Corrige validação da funcionalidade"
+git push</pre>
+      <p class="mb-0">
+        O Pull Request existente será atualizado automaticamente.
+      </p>
+
+      <h3 class="h5 mt-4">⚠️ 8.8 Apareceu um conflito</h3>
+      <p>
+        Conflito acontece quando o Git não consegue combinar automaticamente duas alterações.
+        Primeiro identifique os arquivos:
+      </p>
+      <pre class="bg-light p-3 rounded">git status</pre>
+      <p>
+        No arquivo em conflito, o Git poderá apresentar marcadores como:
+      </p>
       <pre class="bg-light p-3 rounded">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
 versão atual
 =======
 versão da outra branch
 &gt;&gt;&gt;&gt;&gt;&gt;&gt; outra-branch</pre>
-      <p><strong>Não apague um bloco sem entender o que ele representa.</strong> Em caso de dúvida, pare e peça revisão.</p>
+      <p>
+        Abra o arquivo no VS Code, compare as versões, resolva a combinação,
+        teste a aplicação e só então registre a resolução.
+      </p>
+      <pre class="bg-light p-3 rounded">git add .
+git commit -m "Resolve conflito de integração"
+git push</pre>
+      <div class="alert alert-warning mb-0">
+        <strong>Em caso de dúvida:</strong> não apague blocos de conflito sem entender o que representam.
+        Pare e peça orientação ao professor.
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4 border-secondary">
+    <div class="card-body">
+      <h2 class="h4">9. Tabela rápida — “apareceu isso, faça aquilo”</h2>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Situação</th>
+              <th>Primeiro procedimento</th>
+              <th>Objetivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Não sei minha branch</td>
+              <td><code>git branch</code></td>
+              <td>Identificar a branch ativa.</td>
+            </tr>
+            <tr>
+              <td>Develop desatualizada</td>
+              <td><code>git pull origin develop</code></td>
+              <td>Atualizar a cópia local.</td>
+            </tr>
+            <tr>
+              <td>Não sei o que alterei</td>
+              <td><code>git status</code> + <code>git diff</code></td>
+              <td>Revisar as alterações.</td>
+            </tr>
+            <tr>
+              <td>Commit não aparece no GitHub</td>
+              <td><code>git push</code></td>
+              <td>Publicar os commits.</td>
+            </tr>
+            <tr>
+              <td>403 / permission denied</td>
+              <td>Parar e chamar o professor</td>
+              <td>Verificar permissões.</td>
+            </tr>
+            <tr>
+              <td>PR com destino incorreto</td>
+              <td>Conferir base/compare</td>
+              <td>Garantir <code>feature → develop</code>.</td>
+            </tr>
+            <tr>
+              <td>PR pediu correção</td>
+              <td>Corrigir na mesma branch e <code>git push</code></td>
+              <td>Atualizar o PR existente.</td>
+            </tr>
+            <tr>
+              <td>Conflito de merge</td>
+              <td><code>git status</code></td>
+              <td>Identificar os arquivos em conflito.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4 border-warning">
+    <div class="card-body">
+      <h2 class="h4">10. E se a porta 5000 estiver ocupada?</h2>
+      <p>
+        Este problema não é um erro do Git. Ele pertence ao ambiente de execução do Flask.
+        Por isso, o procedimento detalhado está no
+        <strong>Roteiro de Desenvolvimento 30/09 → Situações comuns</strong>.
+      </p>
+      <p>
+        Como referência, o diagnóstico começa com:
+      </p>
+      <pre class="bg-light p-3 rounded">lsof -i :5000</pre>
+      <p class="mb-0">
+        A documentação do roteiro explica como identificar o PID, utilizar
+        <code>kill PID</code>, verificar novamente e, se necessário, utilizar
+        <code>kill -9 PID</code>.
+      </p>
+    </div>
+  </div>
+
+  <div class="card mb-4 border-warning">
+    <div class="card-body">
+      <h2 class="h4">11. E se houver conflito?</h2>
+      <p>
+        Conflito acontece quando o Git não consegue decidir automaticamente como combinar
+        duas alterações. Isso é comum quando dois grupos alteram a mesma linha ou região do mesmo arquivo.
+      </p>
+      <p>
+        O procedimento é identificar o arquivo, comparar as versões, resolver o conteúdo,
+        testar novamente, criar um commit de resolução e atualizar o Pull Request.
+      </p>
+      <div class="alert alert-info mb-0">
+        <strong>Importante:</strong> conflito não significa que o projeto foi perdido.
+        Significa que o Git precisa de uma decisão humana sobre como combinar as alterações.
+      </div>
     </div>
   </div>
 
   <div class="card mb-4">
     <div class="card-body">
-      <h2 class="h4">8. Integração final</h2>
-      <p>Depois que todos os grupos tiverem seus Pull Requests integrados em <code>develop</code>, faremos um teste integrado da aplicação inteira.</p>
-      <p>Somente depois da validação a versão de integração será promovida para <code>main</code>.</p>
+      <h2 class="h4">12. Integração final</h2>
+      <p>
+        Depois que os Pull Requests forem revisados e integrados em <code>develop</code>,
+        será realizado um teste integrado da aplicação.
+      </p>
+      <p>O fluxo conceitual é:</p>
       <pre class="bg-light p-3 rounded">feature branches
       ↓
    Pull Requests
@@ -111,7 +383,19 @@ versão da outra branch
       main
       ↓
  versão estável</pre>
+      <p class="mb-0">
+        A <code>main</code> permanece como referência da versão principal do produto.
+      </p>
     </div>
   </div>
+
+  <div class="alert alert-success shadow-sm">
+    <h2 class="h5">⭐ Regra de ouro</h2>
+    <p class="mb-0">
+      <strong>Leia a mensagem, diagnostique o problema e só depois execute a correção.</strong>
+      Aprender Git significa também aprender a interpretar o que o Git está informando.
+    </p>
+  </div>
+
 </div>
 {% endblock %}

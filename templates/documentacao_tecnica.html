@@ -2,42 +2,92 @@
 {% block title %}Documentação Técnica{% endblock %}
 {% block content %}
 <div class="container-fluid py-3">
+
     <div class="mb-4">
         <h1>Documentação Técnica — LOGIEXPRESS 1.1</h1>
-        <p class="text-secondary mb-0">Engenharia reversa da aplicação: entendendo o sistema a partir do código que já está funcionando.</p>
+        <p class="text-secondary mb-0">
+            Guia prático para entender a aplicação existente e saber onde alterar ou criar código durante os exercícios.
+        </p>
     </div>
 
     <div class="alert alert-primary">
-        <strong>Objetivo:</strong> compreender como cada parte do LOGIEXPRESS se conecta, antes de começar a desenvolver novas funcionalidades.
+        <strong>Objetivo:</strong>
+        entender o caminho <strong>HTML → Flask → banco → Flask → Jinja2 → HTML</strong>
+        antes de começar uma nova funcionalidade. O aluno deve aproveitar os padrões já existentes no LOGIEXPRESS.
     </div>
 
-    <div class="card mb-4">
+    <!-- 1 -->
+    <div class="card mb-4" id="arquitetura">
         <div class="card-body">
             <h2 class="h4">1. Visão geral da arquitetura</h2>
-            <pre class="bg-light p-3 rounded">Navegador
-    ↓
-HTML + Jinja2 + Bootstrap + CSS
-    ↓
-Flask / Python
-    ↓
-SQLAlchemy (ORM)
-    ↓
-SQLite (local) / PostgreSQL (produção)
-    ↓
-Dados</pre>
-            <p>O navegador solicita uma página. O Flask recebe a requisição por uma rota, consulta ou altera os dados por meio do SQLAlchemy e entrega um template HTML preenchido com os dados.</p>
+            <p>
+                O navegador envia uma requisição HTTP. O Flask recebe essa requisição por uma rota,
+                executa a regra necessária, consulta ou altera os dados usando SQLAlchemy e,
+                quando precisa exibir uma página, envia os dados para um template Jinja2.
+            </p>
+
+            <details class="mb-3">
+                <summary class="btn btn-outline-primary">🔎 Abrir diagrama da arquitetura</summary>
+                <div class="border rounded p-2 mt-2 bg-light overflow-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" style="max-width:100%;height:auto">
+                        <rect width="1200" height="500" fill="#f7f9fc"/>
+                        <text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#173f6b">LOGIEXPRESS — Arquitetura geral</text>
+                        <g font-family="Arial">
+                            <rect x="35" y="110" width="245" height="210" rx="18" fill="#fff" stroke="#3b82c4" stroke-width="3"/>
+                            <text x="157" y="150" text-anchor="middle" font-size="22" font-weight="700" fill="#245b9e">Navegador</text>
+                            <text x="157" y="190" text-anchor="middle" font-size="16">HTML + CSS</text><text x="157" y="220" text-anchor="middle" font-size="16">Jinja2</text><text x="157" y="250" text-anchor="middle" font-size="16">GET / POST</text>
+                            <rect x="320" y="110" width="245" height="210" rx="18" fill="#fff" stroke="#f08a24" stroke-width="3"/>
+                            <text x="442" y="150" text-anchor="middle" font-size="22" font-weight="700" fill="#c15d00">Flask / Python</text>
+                            <text x="442" y="190" text-anchor="middle" font-size="16">app.py</text><text x="442" y="220" text-anchor="middle" font-size="16">Rotas</text><text x="442" y="250" text-anchor="middle" font-size="16">Regras de negócio</text>
+                            <rect x="605" y="110" width="245" height="210" rx="18" fill="#fff" stroke="#7c55c7" stroke-width="3"/>
+                            <text x="727" y="150" text-anchor="middle" font-size="22" font-weight="700" fill="#5b3c9e">SQLAlchemy</text>
+                            <text x="727" y="190" text-anchor="middle" font-size="16">Modelos</text><text x="727" y="220" text-anchor="middle" font-size="16">Query / Filter</text><text x="727" y="250" text-anchor="middle" font-size="16">add / commit</text>
+                            <rect x="890" y="110" width="275" height="210" rx="18" fill="#fff" stroke="#2d9b68" stroke-width="3"/>
+                            <text x="1027" y="150" text-anchor="middle" font-size="22" font-weight="700" fill="#19724a">Banco de dados</text>
+                            <text x="1027" y="195" text-anchor="middle" font-size="16">SQLite — Codespace</text><text x="1027" y="225" text-anchor="middle" font-size="16">PostgreSQL — produção</text><text x="1027" y="265" text-anchor="middle" font-size="16">Tabelas + registros</text>
+                            <path d="M280 215 H315" stroke="#245b9e" stroke-width="4"/><path d="M565 215 H600" stroke="#245b9e" stroke-width="4"/><path d="M850 215 H885" stroke="#245b9e" stroke-width="4"/>
+                            <text x="600" y="365" text-anchor="middle" font-size="17" fill="#44515d">Resposta: dados → render_template() → Jinja2 → HTML → navegador</text>
+                            <rect x="190" y="400" width="820" height="55" rx="14" fill="#eaf3ff" stroke="#b7d3f0"/>
+                            <text x="600" y="434" text-anchor="middle" font-size="16" font-weight="700" fill="#245b9e">No exercício: descubra primeiro em qual camada a alteração pertence.</text>
+                        </g>
+                    </svg>
+                </div>
+            </details>
         </div>
     </div>
 
+    <!-- MAPA -->
     <div class="card mb-4">
         <div class="card-body">
-            <h2 class="h4">2. Estrutura do projeto</h2>
-            <pre class="bg-light p-3 rounded">altoimpacto_logiexpress/
+            <h2 class="h4">Mapa rápido — clique no ponto que você precisa estudar</h2>
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3"><a href="#app-py" class="text-decoration-none"><div class="border rounded p-3 h-100"><strong>📄 app.py</strong><br><span class="small text-secondary">Flask, modelos, rotas, banco, GET e POST.</span></div></a></div>
+                <div class="col-md-6 col-lg-3"><a href="#modelo-dados" class="text-decoration-none"><div class="border rounded p-3 h-100"><strong>🗄️ Modelo de dados</strong><br><span class="small text-secondary">Estrutura das tabelas e relacionamentos.</span></div></a></div>
+                <div class="col-md-6 col-lg-3"><a href="#crud" class="text-decoration-none"><div class="border rounded p-3 h-100"><strong>🔄 CRUD</strong><br><span class="small text-secondary">Criar, consultar, alterar e excluir.</span></div></a></div>
+                <div class="col-md-6 col-lg-3"><a href="#jinja2" class="text-decoration-none"><div class="border rounded p-3 h-100"><strong>🧩 Jinja2</strong><br><span class="small text-secondary">Como os dados viram HTML.</span></div></a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="card mb-4" id="estrutura">
+        <div class="card-body">
+            <h2 class="h4">2. Estrutura do projeto — cada item tem uma função</h2>
+            <p class="text-secondary">Você não precisa memorizar tudo. Para os exercícios, concentre-se principalmente em <code>app.py</code>, <code>templates/</code> e <code>static/style.css</code>.</p>
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4"><a href="#app-py" class="text-decoration-none"><div class="border rounded p-3 h-100"><strong>📄 app.py</strong><br><span class="small text-secondary">Backend Flask, modelos, rotas e regras.</span></div></a></div>
+                <div class="col-md-6 col-lg-4"><div class="border rounded p-3 h-100"><strong>📦 requirements.txt</strong><br><span class="small text-secondary">Dependências Python.</span></div></div>
+                <div class="col-md-6 col-lg-4"><div class="border rounded p-3 h-100"><strong>🚀 render.yaml</strong><br><span class="small text-secondary">Configuração de produção no Render.</span></div></div>
+                <div class="col-md-6 col-lg-4"><div class="border rounded p-3 h-100"><strong>🎨 static/style.css</strong><br><span class="small text-secondary">Aparência compartilhada.</span></div></div>
+                <div class="col-md-6 col-lg-4"><a href="#jinja2" class="text-decoration-none"><div class="border rounded p-3 h-100"><strong>🧩 templates/</strong><br><span class="small text-secondary">Páginas HTML com Jinja2.</span></div></a></div>
+                <div class="col-md-6 col-lg-4"><div class="border rounded p-3 h-100"><strong>👥 templates/clientes/</strong><br><span class="small text-secondary">Exemplo completo de CRUD.</span></div></div>
+                <div class="col-md-6 col-lg-4"><div class="border rounded p-3 h-100"><strong>🧪 tests/</strong><br><span class="small text-secondary">Espaço para testes automatizados.</span></div></div>
+                <div class="col-md-6 col-lg-4"><div class="border rounded p-3 h-100"><strong>📚 docs/</strong><br><span class="small text-secondary">Documentação complementar.</span></div></div>
+            </div>
+            <pre class="bg-light p-3 rounded mt-4">altoimpacto_logiexpress/
 ├── app.py
 ├── requirements.txt
 ├── render.yaml
-├── README.md
-├── .env.example
 ├── static/
 │   ├── style.css
 │   └── images/
@@ -47,146 +97,527 @@ Dados</pre>
 │   ├── list.html
 │   ├── form.html
 │   ├── view.html
-│   ├── reports.html
-│   ├── instrucoes.html
 │   └── clientes/
 │       ├── list.html
 │       ├── form.html
 │       └── view.html
 ├── tests/
 └── docs/</pre>
-            <ul>
-                <li><strong>app.py:</strong> backend, modelos, regras de negócio e rotas.</li>
-                <li><strong>templates:</strong> páginas HTML renderizadas pelo Flask/Jinja2.</li>
-                <li><strong>static:</strong> CSS, imagens e demais arquivos estáticos.</li>
-                <li><strong>requirements.txt:</strong> dependências Python.</li>
-                <li><strong>tests:</strong> espaço destinado aos testes automatizados.</li>
-            </ul>
         </div>
     </div>
 
-    <div class="card mb-4">
+    <!-- 3 -->
+    <div class="card mb-4" id="app-py">
         <div class="card-body">
-            <h2 class="h4">3. O arquivo app.py</h2>
-            <p>O arquivo principal concentra a aplicação Flask. No LOGIEXPRESS ele contém, em linhas gerais:</p>
+            <h2 class="h4">3. app.py — o centro do backend</h2>
+            <p>
+                O <code>app.py</code> cria o Flask, configura o banco, define os modelos,
+                registra as rotas, executa consultas e alterações e envia dados aos templates.
+            </p>
+
+            <details class="mb-3">
+                <summary class="btn btn-outline-primary">🔎 Abrir imagem explicativa do app.py</summary>
+                <div class="border rounded p-2 mt-2 bg-dark overflow-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690" style="max-width:100%;height:auto">
+                        <rect width="1200" height="690" fill="#111c27"/>
+                        <text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#fff">app.py — mapa do backend</text>
+                        <g font-family="Arial">
+                            <rect x="40" y="85" width="250" height="150" rx="18" fill="#17283a" stroke="#3b82c4" stroke-width="2"/>
+                            <text x="165" y="120" text-anchor="middle" font-size="21" font-weight="700" fill="#73b7ff">1. Flask + Banco</text>
+                            <text x="60" y="155" fill="#fff" font-size="15">app = Flask(__name__)</text><text x="60" y="185" fill="#fff" font-size="15">DATABASE_URL</text><text x="60" y="215" fill="#fff" font-size="15">db = SQLAlchemy(app)</text>
+                            <rect x="320" y="85" width="250" height="150" rx="18" fill="#17283a" stroke="#7c55c7" stroke-width="2"/>
+                            <text x="445" y="120" text-anchor="middle" font-size="21" font-weight="700" fill="#c4a9ff">2. Modelos</text>
+                            <text x="340" y="155" fill="#fff" font-size="15">Cliente(db.Model)</text><text x="340" y="185" fill="#fff" font-size="15">Pedido(db.Model)</text><text x="340" y="215" fill="#fff" font-size="15">Entrega(db.Model)</text>
+                            <rect x="600" y="85" width="250" height="150" rx="18" fill="#17283a" stroke="#f08a24" stroke-width="2"/>
+                            <text x="725" y="120" text-anchor="middle" font-size="21" font-weight="700" fill="#ffbd78">3. Rotas</text>
+                            <text x="620" y="155" fill="#fff" font-size="15">@app.route(...)</text><text x="620" y="185" fill="#fff" font-size="15">GET → consulta/exibe</text><text x="620" y="215" fill="#fff" font-size="15">POST → recebe dados</text>
+                            <rect x="880" y="85" width="280" height="150" rx="18" fill="#17283a" stroke="#2d9b68" stroke-width="2"/>
+                            <text x="1020" y="120" text-anchor="middle" font-size="21" font-weight="700" fill="#76e2ad">4. Template</text>
+                            <text x="900" y="155" fill="#fff" font-size="15">render_template()</text><text x="900" y="185" fill="#fff" font-size="15">envia variáveis</text><text x="900" y="215" fill="#fff" font-size="15">→ Jinja2 / HTML</text>
+                            <rect x="100" y="285" width="1000" height="250" rx="18" fill="#0c151e" stroke="#33485d"/>
+                            <text x="600" y="320" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">Exemplo real do CRUD de Clientes</text>
+                            <text x="135" y="365" font-family="monospace" font-size="16" fill="#9cdcfe">@app.route("/clientes")</text>
+                            <text x="135" y="400" font-family="monospace" font-size="16" fill="#fff">def clientes_list():</text>
+                            <text x="135" y="435" font-family="monospace" font-size="16" fill="#dcdcaa">    clientes = Cliente.query.order_by(Cliente.id.desc()).all()</text>
+                            <text x="135" y="470" font-family="monospace" font-size="16" fill="#4ec9b0">    return render_template("clientes/list.html", clientes=clientes)</text>
+                            <text x="135" y="510" font-family="Arial" font-size="15" fill="#b9c4cf">Query → variável Python → render_template → Jinja2 → HTML</text>
+                            <rect x="100" y="570" width="1000" height="70" rx="14" fill="#1c3348"/>
+                            <text x="600" y="598" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">Para o exercício</text>
+                            <text x="600" y="622" text-anchor="middle" font-size="15" fill="#cbd5df">Localize a rota, a consulta e o template correspondente antes de alterar o código.</text>
+                        </g>
+                    </svg>
+                </div>
+            </details>
+
+            <div class="row g-3">
+                <div class="col-md-6"><div class="alert alert-light border h-100"><strong>Flask:</strong> <code>app = Flask(__name__)</code> cria a aplicação.</div></div>
+                <div class="col-md-6"><div class="alert alert-light border h-100"><strong>SQLAlchemy:</strong> <code>db = SQLAlchemy(app)</code> permite trabalhar com o banco por Python.</div></div>
+                <div class="col-md-6"><div class="alert alert-light border h-100"><strong>GET:</strong> normalmente consulta ou exibe dados.</div></div>
+                <div class="col-md-6"><div class="alert alert-light border h-100"><strong>POST:</strong> recebe dados enviados pelo formulário para processamento.</div></div>
+            </div>
+
+            <h3 class="h6">Como os dados chegam ao HTML?</h3>
+            <pre class="bg-light p-3 rounded">clientes = Cliente.query.order_by(Cliente.id.desc()).all()
+
+return render_template(
+    "clientes/list.html",
+    clientes=clientes
+)</pre>
+            <p>
+                A variável <code>clientes</code> é enviada pelo <code>render_template()</code>.
+                O Jinja2 usa essa variável para gerar o HTML da lista.
+            </p>
+        </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="card mb-4" id="modelo-dados">
+        <div class="card-body">
+            <h2 class="h4">4. Modelo de dados — não confunda com orientação a objetos</h2>
+            <div class="alert alert-info">
+                <strong>Importante:</strong>
+                aqui a palavra <strong>classe</strong> aparece porque o SQLAlchemy utiliza classes Python
+                para descrever tabelas. O foco do exercício é entender <strong>dados, campos, chaves e relacionamentos</strong>,
+                e não estudar orientação a objetos.
+            </div>
+
+            <details class="mb-3">
+                <summary class="btn btn-outline-success">🔎 Abrir diagrama do modelo de dados</summary>
+                <div class="border rounded p-2 mt-2 bg-light overflow-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1050" viewBox="0 0 1500 1050" style="max-width:100%;height:auto">
+                        <rect width="1500" height="1050" fill="#f7f9fc"/>
+                        <text x="750" y="42" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#173f6b">LOGIEXPRESS — Modelo de dados completo</text>
+                        <text x="750" y="70" text-anchor="middle" font-family="Arial" font-size="15" fill="#566573">Todas as tabelas/modelos existentes no app.py e seus principais relacionamentos</text>
+
+                        <!-- CLIENTES -->
+                        <rect x="35" y="105" width="250" height="175" rx="12" fill="#fff" stroke="#3b82c4" stroke-width="3"/>
+                        <rect x="35" y="105" width="250" height="42" rx="12" fill="#3b82c4"/>
+                        <text x="160" y="132" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">CLIENTE</text>
+                        <text x="55" y="170" font-family="Arial" font-size="14">id • PK</text><text x="55" y="192" font-family="Arial" font-size="14">nome</text><text x="55" y="214" font-family="Arial" font-size="14">documento • UNIQUE</text><text x="55" y="236" font-family="Arial" font-size="14">cidade • uf</text><text x="55" y="258" font-family="Arial" font-size="14">ativo</text>
+
+                        <!-- MOTORISTAS -->
+                        <rect x="325" y="105" width="250" height="175" rx="12" fill="#fff" stroke="#7c55c7" stroke-width="3"/>
+                        <rect x="325" y="105" width="250" height="42" rx="12" fill="#7c55c7"/>
+                        <text x="450" y="132" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">MOTORISTA</text>
+                        <text x="345" y="170" font-family="Arial" font-size="14">id • PK</text><text x="345" y="192" font-family="Arial" font-size="14">nome</text><text x="345" y="214" font-family="Arial" font-size="14">cnh</text><text x="345" y="236" font-family="Arial" font-size="14">telefone</text><text x="345" y="258" font-family="Arial" font-size="14">ativo</text>
+
+                        <!-- VEICULOS -->
+                        <rect x="615" y="105" width="250" height="175" rx="12" fill="#fff" stroke="#f08a24" stroke-width="3"/>
+                        <rect x="615" y="105" width="250" height="42" rx="12" fill="#f08a24"/>
+                        <text x="740" y="132" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">VEICULO</text>
+                        <text x="635" y="170" font-family="Arial" font-size="14">id • PK</text><text x="635" y="192" font-family="Arial" font-size="14">placa</text><text x="635" y="214" font-family="Arial" font-size="14">modelo</text><text x="635" y="236" font-family="Arial" font-size="14">tipo</text><text x="635" y="258" font-family="Arial" font-size="14">capacidade_kg • ativo</text>
+
+                        <!-- PRODUTOS -->
+                        <rect x="905" y="105" width="250" height="175" rx="12" fill="#fff" stroke="#2d9b68" stroke-width="3"/>
+                        <rect x="905" y="105" width="250" height="42" rx="12" fill="#2d9b68"/>
+                        <text x="1030" y="132" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">PRODUTO</text>
+                        <text x="925" y="170" font-family="Arial" font-size="14">id • PK</text><text x="925" y="192" font-family="Arial" font-size="14">codigo</text><text x="925" y="214" font-family="Arial" font-size="14">descricao</text><text x="925" y="236" font-family="Arial" font-size="14">categoria</text><text x="925" y="258" font-family="Arial" font-size="14">estoque • estoque_minimo</text>
+
+                        <!-- CENTROS -->
+                        <rect x="1195" y="105" width="270" height="175" rx="12" fill="#fff" stroke="#5b7c99" stroke-width="3"/>
+                        <rect x="1195" y="105" width="270" height="42" rx="12" fill="#5b7c99"/>
+                        <text x="1330" y="132" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">CENTRO_DISTRIBUICAO</text>
+                        <text x="1215" y="170" font-family="Arial" font-size="14">id • PK</text><text x="1215" y="192" font-family="Arial" font-size="14">nome</text><text x="1215" y="214" font-family="Arial" font-size="14">cidade • uf</text><text x="1215" y="236" font-family="Arial" font-size="14">capacidade</text><text x="1215" y="258" font-family="Arial" font-size="14">ativo</text>
+
+                        <!-- TRANSPORTADORAS -->
+                        <rect x="35" y="335" width="250" height="175" rx="12" fill="#fff" stroke="#3b82c4" stroke-width="3"/>
+                        <rect x="35" y="335" width="250" height="42" rx="12" fill="#3b82c4"/>
+                        <text x="160" y="362" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">TRANSPORTADORA</text>
+                        <text x="55" y="400" font-family="Arial" font-size="14">id • PK</text><text x="55" y="422" font-family="Arial" font-size="14">razao_social</text><text x="55" y="444" font-family="Arial" font-size="14">cnpj</text><text x="55" y="466" font-family="Arial" font-size="14">cidade • uf</text><text x="55" y="488" font-family="Arial" font-size="14">ativo</text>
+
+                        <!-- PEDIDOS -->
+                        <rect x="325" y="335" width="250" height="175" rx="12" fill="#fff" stroke="#7c55c7" stroke-width="3"/>
+                        <rect x="325" y="335" width="250" height="42" rx="12" fill="#7c55c7"/>
+                        <text x="450" y="362" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">PEDIDO</text>
+                        <text x="345" y="400" font-family="Arial" font-size="14">id • PK</text><text x="345" y="422" font-family="Arial" font-size="14">numero</text><text x="345" y="444" font-family="Arial" font-size="14">cliente_id • FK</text><text x="345" y="466" font-family="Arial" font-size="14">data_pedido</text><text x="345" y="488" font-family="Arial" font-size="14">valor • status</text>
+
+                        <!-- ITEM PEDIDO -->
+                        <rect x="615" y="335" width="250" height="175" rx="12" fill="#fff" stroke="#f08a24" stroke-width="3"/>
+                        <rect x="615" y="335" width="250" height="42" rx="12" fill="#f08a24"/>
+                        <text x="740" y="362" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">ITEM_PEDIDO</text>
+                        <text x="635" y="400" font-family="Arial" font-size="14">id • PK</text><text x="635" y="422" font-family="Arial" font-size="14">pedido_id • FK</text><text x="635" y="444" font-family="Arial" font-size="14">produto_id • FK</text><text x="635" y="466" font-family="Arial" font-size="14">quantidade</text><text x="635" y="488" font-family="Arial" font-size="14">valor_unitario</text>
+
+                        <!-- ROTAS -->
+                        <rect x="905" y="335" width="250" height="175" rx="12" fill="#fff" stroke="#2d9b68" stroke-width="3"/>
+                        <rect x="905" y="335" width="250" height="42" rx="12" fill="#2d9b68"/>
+                        <text x="1030" y="362" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">ROTA</text>
+                        <text x="925" y="400" font-family="Arial" font-size="14">id • PK</text><text x="925" y="422" font-family="Arial" font-size="14">origem</text><text x="925" y="444" font-family="Arial" font-size="14">destino</text><text x="925" y="466" font-family="Arial" font-size="14">distancia_km</text><text x="925" y="488" font-family="Arial" font-size="14">tempo_estimado_h • ativa</text>
+
+                        <!-- ENTREGAS -->
+                        <rect x="1195" y="335" width="270" height="175" rx="12" fill="#fff" stroke="#5b7c99" stroke-width="3"/>
+                        <rect x="1195" y="335" width="270" height="42" rx="12" fill="#5b7c99"/>
+                        <text x="1330" y="362" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">ENTREGA</text>
+                        <text x="1215" y="400" font-family="Arial" font-size="14">id • PK</text><text x="1215" y="422" font-family="Arial" font-size="14">pedido_id • FK</text><text x="1215" y="444" font-family="Arial" font-size="14">motorista_id • FK</text><text x="1215" y="466" font-family="Arial" font-size="14">veiculo_id • FK</text><text x="1215" y="488" font-family="Arial" font-size="14">rota_id • FK • status</text>
+
+                        <!-- OCORRENCIAS -->
+                        <rect x="325" y="565" width="250" height="175" rx="12" fill="#fff" stroke="#c95757" stroke-width="3"/>
+                        <rect x="325" y="565" width="250" height="42" rx="12" fill="#c95757"/>
+                        <text x="450" y="592" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">OCORRENCIA</text>
+                        <text x="345" y="630" font-family="Arial" font-size="14">id • PK</text><text x="345" y="652" font-family="Arial" font-size="14">entrega_id • FK</text><text x="345" y="674" font-family="Arial" font-size="14">tipo</text><text x="345" y="696" font-family="Arial" font-size="14">descricao • data</text><text x="345" y="718" font-family="Arial" font-size="14">status</text>
+
+                        <!-- RELATIONSHIP LINES -->
+                        <g stroke="#6b7280" stroke-width="2.5" fill="none">
+                            <!-- Cliente 1:N Pedido -->
+                            <path d="M285 205 H325"/>
+                            <!-- Pedido 1:N ItemPedido -->
+                            <path d="M575 420 H615"/>
+                            <!-- Produto 1:N ItemPedido -->
+                            <path d="M740 280 V335"/>
+                            <!-- Pedido 1:1 Entrega -->
+                            <path d="M575 450 C800 540 1080 520 1195 450"/>
+                            <!-- Motorista 1:N Entrega -->
+                            <path d="M450 280 C850 300 1100 300 1270 335"/>
+                            <!-- Veiculo 1:N Entrega -->
+                            <path d="M740 280 C900 300 1180 305 1320 335"/>
+                            <!-- Rota 1:N Entrega -->
+                            <path d="M1155 420 H1195"/>
+                            <!-- Entrega 1:N Ocorrencia -->
+                            <path d="M1330 510 C1180 620 760 650 575 650"/>
+                        </g>
+
+                        <!-- RELATIONSHIP LABELS -->
+                        <g font-family="Arial" font-size="13" fill="#44515d">
+                            <text x="294" y="195">1:N</text>
+                            <text x="585" y="410">1:N</text>
+                            <text x="750" y="320">1:N</text>
+                            <text x="1010" y="515">1:1</text>
+                            <text x="1050" y="300">1:N</text>
+                            <text x="1160" y="310">1:N</text>
+                            <text x="1165" y="410">1:N</text>
+                            <text x="900" y="635">1:N</text>
+                        </g>
+
+                        <!-- LEGEND -->
+                        <rect x="700" y="565" width="765" height="175" rx="14" fill="#fff" stroke="#adb5bd" stroke-width="2"/>
+                        <text x="1082" y="600" text-anchor="middle" font-family="Arial" font-size="20" font-weight="700" fill="#173f6b">Como interpretar o diagrama</text>
+                        <text x="725" y="635" font-family="Arial" font-size="15" fill="#27313a">PK = chave primária • FK = chave estrangeira</text>
+                        <text x="725" y="662" font-family="Arial" font-size="15" fill="#27313a">1:N = um registro pode se relacionar com vários registros.</text>
+                        <text x="725" y="689" font-family="Arial" font-size="15" fill="#27313a">Ex.: um cliente pode ter vários pedidos.</text>
+                        <text x="725" y="716" font-family="Arial" font-size="15" fill="#27313a">ItemPedido liga Pedido e Produto.</text>
+
+                        <!-- FLOW -->
+                        <rect x="35" y="795" width="1430" height="185" rx="16" fill="#eaf3ff" stroke="#b7d3f0"/>
+                        <text x="750" y="830" text-anchor="middle" font-family="Arial" font-size="20" font-weight="700" fill="#245b9e">Leitura do modelo</text>
+                        <text x="750" y="862" text-anchor="middle" font-family="Arial" font-size="15" fill="#27313a">Cliente → Pedido → ItemPedido → Produto</text>
+                        <text x="750" y="890" text-anchor="middle" font-family="Arial" font-size="15" fill="#27313a">Pedido → Entrega → Ocorrência</text>
+                        <text x="750" y="918" text-anchor="middle" font-family="Arial" font-size="15" fill="#27313a">Motorista + Veículo + Rota → Entrega</text>
+                        <text x="750" y="946" text-anchor="middle" font-family="Arial" font-size="15" fill="#27313a">Centros de Distribuição e Transportadoras são cadastros independentes nesta versão.</text>
+                    </svg>
+                </div>                </div>
+            </details>
+
+            <h3 class="h6">Como interpretar o modelo de dados?</h3>
+            <p>
+                O diagrama apresenta <strong>todas as 11 tabelas/modelos</strong> existentes nesta versão do LOGIEXPRESS.
+                As caixas mostram as entidades, seus principais campos e as chaves que permitem relacioná-las.
+            </p>
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tabela</th>
+                            <th>Função no sistema</th>
+                            <th>Relacionamentos principais</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>Cliente</code></td><td>Empresas/pessoas que recebem os pedidos.</td><td>1:N com <code>Pedido</code>.</td></tr>
+                        <tr><td><code>Motorista</code></td><td>Profissionais responsáveis pelas entregas.</td><td>1:N com <code>Entrega</code>.</td></tr>
+                        <tr><td><code>Veiculo</code></td><td>Veículos utilizados na operação.</td><td>1:N com <code>Entrega</code>.</td></tr>
+                        <tr><td><code>Produto</code></td><td>Itens disponíveis para comercialização/estoque.</td><td>1:N com <code>ItemPedido</code>.</td></tr>
+                        <tr><td><code>CentroDistribuicao</code></td><td>Centros de distribuição cadastrados.</td><td>Cadastro independente nesta versão.</td></tr>
+                        <tr><td><code>Transportadora</code></td><td>Transportadoras cadastradas.</td><td>Cadastro independente nesta versão.</td></tr>
+                        <tr><td><code>Pedido</code></td><td>Pedido realizado por um cliente.</td><td>N:1 com Cliente; 1:N com ItemPedido; 1:1 com Entrega.</td></tr>
+                        <tr><td><code>ItemPedido</code></td><td>Detalha os produtos e quantidades de cada pedido.</td><td>N:1 com Pedido e N:1 com Produto.</td></tr>
+                        <tr><td><code>Rota</code></td><td>Define origem, destino e características do percurso.</td><td>1:N com Entrega.</td></tr>
+                        <tr><td><code>Entrega</code></td><td>Representa a execução logística de um pedido.</td><td>N:1 com Motorista, Veiculo e Rota; 1:1 com Pedido; 1:N com Ocorrencia.</td></tr>
+                        <tr><td><code>Ocorrencia</code></td><td>Registra problemas ou eventos de uma entrega.</td><td>N:1 com Entrega.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="h6">Como as tabelas são criadas?</h3>
+            <pre class="bg-light p-3 rounded">with app.app_context():
+    db.create_all()
+    seed_data()</pre>
+            <ul>
+                <li><code>db.create_all()</code> cria as tabelas definidas pelos modelos quando ainda não existem.</li>
+                <li><code>seed_data()</code> cria registros iniciais para demonstrar o sistema.</li>
+                <li>No projeto atual, a carga inicial começa verificando se já existe um cliente.</li>
+            </ul>
+
+            <h3 class="h6">Como os dados são enviados para uma página?</h3>
+            <pre class="bg-light p-3 rounded">clientes = Cliente.query.order_by(Cliente.id.desc()).all()
+
+return render_template(
+    "clientes/list.html",
+    clientes=clientes
+)</pre>
+            <p>
+                O <strong>GET</strong> chama a rota de consulta. A consulta retorna objetos Python.
+                O <code>render_template()</code> recebe esses objetos como variáveis e o Jinja2 os transforma em HTML.
+            </p>
+
+            <h3 class="h6">O que o aluno precisará alterar?</h3>
             <ol>
-                <li>importação das bibliotecas;</li>
-                <li>criação e configuração do Flask;</li>
-                <li>configuração do banco;</li>
-                <li>modelos SQLAlchemy;</li>
-                <li>dados iniciais (<code>seed_data()</code>);</li>
-                <li>rotas do dashboard e cadastros;</li>
-                <li>CRUD específico de Clientes;</li>
-                <li>relatórios e instruções;</li>
-                <li>criação das tabelas e inicialização do servidor.</li>
+                <li>Se o exercício precisar de uma nova entidade, crie um novo modelo seguindo o padrão existente.</li>
+                <li>Defina os campos e, se necessário, os relacionamentos.</li>
+                <li>Crie as rotas que consultarão ou alterarão esse modelo.</li>
+                <li>Crie os templates que apresentarão os dados.</li>
+                <li>Adicione carga inicial somente se ela for útil para o exercício.</li>
             </ol>
         </div>
     </div>
 
-    <div class="card mb-4">
+    <!-- 5 -->
+    <div class="card mb-4" id="crud">
         <div class="card-body">
-            <h2 class="h4">4. Modelo Cliente</h2>
-            <pre class="bg-light p-3 rounded">class Cliente(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(120), nullable=False)
-    documento = db.Column(db.String(20), unique=True, nullable=False)
-    cidade = db.Column(db.String(80), nullable=False)
-    uf = db.Column(db.String(2), nullable=False)
-    ativo = db.Column(db.Boolean, default=True)
-    pedidos = db.relationship("Pedido", backref="cliente", lazy=True)</pre>
-            <p>Esse modelo representa uma tabela. Cada objeto <code>Cliente</code> representa um registro. A propriedade <code>pedidos</code> representa o relacionamento com os pedidos.</p>
-        </div>
-    </div>
+            <h2 class="h4">5. CRUD de Clientes — modelo para os exercícios</h2>
+            <p>
+                O CRUD completo de Clientes está no <code>app.py</code> e usa os templates de
+                <code>templates/clientes/</code>. Estude esse módulo antes de criar o seu.
+            </p>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h2 class="h4">5. CRUD de Clientes</h2>
-            <p>O cadastro foi implementado de forma específica para demonstrar o ciclo completo:</p>
             <table class="table table-bordered align-middle">
-                <thead><tr><th>Operação</th><th>Rota</th><th>O que acontece</th></tr></thead>
+                <thead><tr><th>Operação</th><th>Rota</th><th>Função no app.py</th><th>O que acontece</th></tr></thead>
                 <tbody>
-                    <tr><td>CREATE</td><td><code>/clientes/novo</code></td><td>Recebe o formulário, valida e grava um cliente.</td></tr>
-                    <tr><td>READ</td><td><code>/clientes</code></td><td>Consulta e lista clientes.</td></tr>
-                    <tr><td>READ</td><td><code>/clientes/&lt;id&gt;</code></td><td>Mostra um cliente individualmente.</td></tr>
-                    <tr><td>UPDATE</td><td><code>/clientes/&lt;id&gt;/editar</code></td><td>Valida e altera os dados.</td></tr>
-                    <tr><td>DELETE</td><td><code>/clientes/&lt;id&gt;/excluir</code></td><td>Exclui somente quando a regra de negócio permite.</td></tr>
+                    <tr><td><strong>CREATE</strong></td><td><code>/clientes/novo</code></td><td><code>clientes_novo()</code></td><td>GET exibe formulário; POST valida e grava.</td></tr>
+                    <tr><td><strong>READ</strong></td><td><code>/clientes</code></td><td><code>clientes_list()</code></td><td>Consulta e envia a lista para <code>clientes/list.html</code>.</td></tr>
+                    <tr><td><strong>READ</strong></td><td><code>/clientes/&lt;id&gt;</code></td><td><code>clientes_view()</code></td><td>Busca e exibe um cliente.</td></tr>
+                    <tr><td><strong>UPDATE</strong></td><td><code>/clientes/&lt;id&gt;/editar</code></td><td><code>clientes_editar()</code></td><td>GET exibe; POST valida e atualiza.</td></tr>
+                    <tr><td><strong>DELETE</strong></td><td><code>/clientes/&lt;id&gt;/excluir</code></td><td><code>clientes_excluir()</code></td><td>POST verifica a regra e exclui quando permitido.</td></tr>
                 </tbody>
             </table>
+
+            <h3 class="h6">Onde está o código?</h3>
+            <pre class="bg-light p-3 rounded">app.py
+├── clientes_list()
+├── clientes_novo()
+├── clientes_view()
+├── clientes_editar()
+└── clientes_excluir()
+
+templates/clientes/
+├── list.html
+├── form.html
+└── view.html</pre>
+
+            <h3 class="h6">Exemplo de CREATE</h3>
+            <pre class="bg-light p-3 rounded">cliente = Cliente(
+    nome=nome,
+    documento=documento,
+    cidade=cidade,
+    uf=uf,
+    ativo=ativo
+)
+
+db.session.add(cliente)
+db.session.commit()</pre>
+
+            <h3 class="h6">O que alterar ou criar no seu exercício?</h3>
+            <table class="table table-sm table-bordered">
+                <thead><tr><th>Tipo de exercício</th><th>Arquivos normalmente envolvidos</th></tr></thead>
+                <tbody>
+                    <tr><td>Novo cadastro</td><td><code>app.py</code> + novo modelo + <code>templates/&lt;modulo&gt;/</code> + menu, se necessário.</td></tr>
+                    <tr><td>Nova consulta/relatório</td><td>Rota GET no <code>app.py</code> + consulta SQLAlchemy + template.</td></tr>
+                    <tr><td>Nova regra de negócio</td><td>Rota/regra no <code>app.py</code> + tela correspondente.</td></tr>
+                    <tr><td>Novo campo</td><td>Modelo + formulário + rota POST/GET + listagem/visualização, conforme o uso.</td></tr>
+                    <tr><td>Apenas visual</td><td>HTML e/ou <code>static/style.css</code>.</td></tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-warning mb-0">
+                <strong>Não copie apenas o texto.</strong>
+                Use o CRUD de Clientes como padrão de arquitetura, mas troque entidade, campos,
+                nomes de rotas, variáveis e regras de negócio conforme o requisito do seu exercício.
+            </div>
         </div>
     </div>
 
+    <!-- 6 -->
     <div class="card mb-4 border-warning">
         <div class="card-body">
             <h2 class="h4">6. Regra de negócio da exclusão</h2>
-            <p>O sistema não permite apagar um cliente que possua pedidos vinculados.</p>
+            <p>O sistema não permite excluir um cliente que possui pedidos relacionados.</p>
             <pre class="bg-light p-3 rounded">quantidade_pedidos = Pedido.query.filter_by(
     cliente_id=cliente.id
 ).count()
 
 if quantidade_pedidos > 0:
-    flash("Não é possível excluir este cliente...", "warning")</pre>
-            <p><strong>Por que isso é importante?</strong> Porque uma aplicação real precisa proteger a integridade dos dados. Um CRUD não deve apenas executar comandos; ele precisa respeitar as regras do negócio.</p>
+    flash(
+        "Não é possível excluir este cliente...",
+        "warning"
+    )</pre>
+            <p class="mb-0">
+                Em um novo exercício, procure também identificar regras desse tipo:
+                o sistema deve aceitar qualquer alteração ou existe uma condição que precisa ser validada?
+            </p>
         </div>
     </div>
 
-    <div class="card mb-4">
+    <!-- 7 -->
+    <div class="card mb-4" id="fluxo-cadastro">
         <div class="card-body">
-            <h2 class="h4">7. Fluxo de um cadastro</h2>
-            <pre class="bg-light p-3 rounded">Usuário preenche formulário
-        ↓
-HTTP POST /clientes/novo
-        ↓
-Flask recebe request.form
-        ↓
-Validação
-        ↓
-Objeto Cliente(...)
-        ↓
-db.session.add()
-        ↓
-db.session.commit()
-        ↓
-Banco de dados
-        ↓
-redirect()
-        ↓
-GET /clientes
-        ↓
-Jinja2 gera HTML
-        ↓
-Navegador mostra a lista</pre>
+            <h2 class="h4">7. Fluxo de cadastro — do formulário até o banco</h2>
+            <p>
+                O fluxo mostra onde cada parte do código participa. Para criar uma nova funcionalidade,
+                siga o mesmo caminho.
+            </p>
+
+            <details class="mb-3">
+                <summary class="btn btn-outline-primary">🔎 Abrir diagrama completo do fluxo</summary>
+                <div class="border rounded p-2 mt-2 bg-light overflow-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" style="max-width:100%;height:auto">
+                        <rect width="1200" height="500" fill="#f7f9fc"/>
+                        <text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#173f6b">Fluxo de cadastro</text>
+                        <g font-family="Arial">
+                            <rect x="30" y="110" width="245" height="190" rx="18" fill="#fff" stroke="#3b82c4" stroke-width="3"/><text x="152" y="150" text-anchor="middle" font-size="21" font-weight="700" fill="#245b9e">1. Formulário</text><text x="152" y="190" text-anchor="middle" font-size="15">clientes/form.html</text><text x="152" y="220" text-anchor="middle" font-size="15">method="POST"</text><text x="152" y="250" text-anchor="middle" font-size="15">name="campo"</text>
+                            <rect x="320" y="110" width="245" height="190" rx="18" fill="#fff" stroke="#f08a24" stroke-width="3"/><text x="442" y="150" text-anchor="middle" font-size="21" font-weight="700" fill="#c15d00">2. Rota Flask</text><text x="442" y="190" text-anchor="middle" font-size="15">/clientes/novo</text><text x="442" y="220" text-anchor="middle" font-size="15">request.form.get()</text><text x="442" y="250" text-anchor="middle" font-size="15">validação</text>
+                            <rect x="610" y="110" width="245" height="190" rx="18" fill="#fff" stroke="#7c55c7" stroke-width="3"/><text x="732" y="150" text-anchor="middle" font-size="21" font-weight="700" fill="#5b3c9e">3. Banco</text><text x="732" y="190" text-anchor="middle" font-size="15">db.session.add()</text><text x="732" y="220" text-anchor="middle" font-size="15">db.session.commit()</text><text x="732" y="250" text-anchor="middle" font-size="15">registro salvo</text>
+                            <rect x="900" y="110" width="270" height="190" rx="18" fill="#fff" stroke="#2d9b68" stroke-width="3"/><text x="1035" y="150" text-anchor="middle" font-size="21" font-weight="700" fill="#19724a">4. GET + Jinja2</text><text x="1035" y="190" text-anchor="middle" font-size="15">redirect()</text><text x="1035" y="220" text-anchor="middle" font-size="15">GET /clientes</text><text x="1035" y="250" text-anchor="middle" font-size="15">render_template()</text>
+                            <text x="600" y="345" text-anchor="middle" font-size="17" fill="#44515d">Banco → consulta → render_template() → Jinja2 → HTML → navegador</text>
+                            <rect x="150" y="385" width="900" height="65" rx="14" fill="#eaf3ff" stroke="#b7d3f0"/><text x="600" y="413" text-anchor="middle" font-size="15" font-weight="700" fill="#245b9e">Para o exercício: modelo → rota GET/POST → formulário → listagem → CSS/menu se necessário.</text>
+                        </g>
+                    </svg>
+                </div>
+            </details>
+
+            <div class="row g-3">
+                <div class="col-md-6"><div class="border rounded p-3 h-100"><strong>GET</strong><p class="small mb-0">Exibe formulário ou consulta dados. Exemplo: <code>GET /clientes</code>.</p></div></div>
+                <div class="col-md-6"><div class="border rounded p-3 h-100"><strong>POST</strong><p class="small mb-0">Recebe dados do formulário. Exemplo: <code>POST /clientes/novo</code>.</p></div></div>
+            </div>
+
+            <div class="alert alert-primary mt-3 mb-0">
+                <strong>Exemplo:</strong> se o exercício for “Manutenção de Veículos”, você seguirá a mesma lógica:
+                modelo <code>Veiculo</code> → rotas → formulário → lista/detalhes → teste.
+            </div>
         </div>
     </div>
 
-    <div class="card mb-4">
+    <!-- 8 -->
+    <div class="card mb-4" id="jinja2">
         <div class="card-body">
-            <h2 class="h4">8. Jinja2</h2>
-            <p>Jinja2 permite misturar HTML com dados enviados pelo Flask.</p>
-            <pre class="bg-light p-3 rounded">{% raw %}{% for cliente in clientes %}
-    &lt;tr&gt;
-        &lt;td&gt;{{ cliente.id }}&lt;/td&gt;
-        &lt;td&gt;{{ cliente.nome }}&lt;/td&gt;
-        &lt;td&gt;{{ cliente.cidade }} / {{ cliente.uf }}&lt;/td&gt;
-    &lt;/tr&gt;
-{% endfor %}{% endraw %}</pre>
-        </div>
-    </div>
+            <h2 class="h4">8. Jinja2 — o que é, por que usamos e como alterar</h2>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h2 class="h4">9. O que o aluno deve observar</h2>
+            <div class="alert alert-info">
+                <strong>O que é?</strong>
+                Jinja2 é o mecanismo de templates usado pelo Flask para gerar HTML dinamicamente.
+                O Python envia dados e o Jinja2 utiliza esses dados dentro do HTML.
+            </div>
+
+            <h3 class="h6">Por que usamos?</h3>
             <ul>
-                <li>Uma rota representa uma entrada da aplicação.</li>
-                <li>GET normalmente consulta ou exibe uma página.</li>
-                <li>POST envia dados para processamento.</li>
-                <li>O modelo representa dados persistidos.</li>
-                <li>SQLAlchemy traduz operações Python em operações no banco.</li>
-                <li>O template transforma dados em HTML.</li>
-                <li>Git registra a evolução do código.</li>
-                <li>Uma branch permite desenvolver uma funcionalidade isoladamente.</li>
-                <li>Um Pull Request permite revisar a alteração antes da integração.</li>
+                <li>separa lógica Python da apresentação HTML;</li>
+                <li>permite reutilizar o layout com <code>base.html</code>;</li>
+                <li>permite percorrer listas vindas do banco;</li>
+                <li>permite condições, links e valores dinâmicos.</li>
             </ul>
+
+            <h3 class="h6">Exemplo 1 — variável</h3>
+            <pre class="bg-light p-3 rounded">{% raw %}{{ cliente.nome }}{% endraw %}</pre>
+            <p>Isso só funciona se a rota enviar uma variável chamada <code>cliente</code>.</p>
+
+            <h3 class="h6">Exemplo 2 — repetição</h3>
+            <pre class="bg-light p-3 rounded">{% raw %}{% for cliente in clientes %}
+<tr>
+    <td>{{ cliente.id }}</td>
+    <td>{{ cliente.nome }}</td>
+    <td>{{ cliente.cidade }} / {{ cliente.uf }}</td>
+</tr>
+{% endfor %}{% endraw %}</pre>
+
+            <h3 class="h6">Exemplo 3 — condição</h3>
+            <pre class="bg-light p-3 rounded">{% raw %}{% if cliente.ativo %}
+    <span class="badge text-bg-success">Ativo</span>
+{% else %}
+    <span class="badge text-bg-secondary">Inativo</span>
+{% endif %}{% endraw %}</pre>
+
+            <h3 class="h6">Exemplo 4 — link para uma rota Flask</h3>
+            <pre class="bg-light p-3 rounded">{% raw %}&lt;a href="{{ url_for('clientes_editar', cliente_id=cliente.id) }}"&gt;Editar&lt;/a&gt;{% endraw %}</pre>
+            <p>
+                No exemplo acima, o código está sendo <strong>demonstrado</strong> e não é um link da própria documentação.
+                Para testar uma rota real, use o botão abaixo.
+            </p>
+            <a class="btn btn-outline-primary btn-sm mb-2" href="{{ url_for('clientes_editar', cliente_id=1) }}">
+                🔗 Abrir exemplo real — editar Cliente 1
+            </a>
+
+            <h3 class="h6">Como alterar ou criar?</h3>
+            <ol>
+                <li>Veja qual variável o <code>render_template()</code> envia.</li>
+                <li>Use exatamente o mesmo nome no template.</li>
+                <li>Se criar um campo novo, ele precisa existir no modelo e ser tratado pela rota quando necessário.</li>
+                <li>Depois altere o HTML/Jinja2 para apresentar o campo.</li>
+                <li>Teste no navegador antes do commit.</li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <strong>Erro comum:</strong>
+                escrever <code>{{ novo_campo }}</code> no HTML sem criar/consultar esse dado no Python.
+                O template depende das variáveis enviadas pela rota.
+            </div>
+
+            <div class="alert alert-success mb-0">
+                <strong>Exemplo:</strong>
+                se sua rota envia <code>veiculos=veiculos</code>, o template pode usar
+                <code>{% raw %}{% for veiculo in veiculos %}{% endraw %}</code>.
+                Não invente o nome da variável: confira o <code>render_template()</code>.
+            </div>
         </div>
     </div>
+
+    <!-- 9 -->
+    <div class="card mb-4" id="exercicios">
+        <div class="card-body">
+            <h2 class="h4">9. O que o aluno deve criar ou alterar no exercício?</h2>
+            <p>
+                O objetivo é evoluir o LOGIEXPRESS, não reconstruí-lo. Use um módulo existente como referência.
+            </p>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <ol>
+                        <li>Leia o requisito do desafio.</li>
+                        <li>Escolha um módulo semelhante como referência.</li>
+                        <li>Crie/altere o modelo de dados se necessário.</li>
+                        <li>Crie as rotas GET/POST necessárias.</li>
+                    </ol>
+                </div>
+                <div class="col-md-6">
+                    <ol start="5">
+                        <li>Crie/duplique e adapte os templates.</li>
+                        <li>Ajuste CSS/menu somente quando necessário.</li>
+                        <li>Teste a funcionalidade completa.</li>
+                        <li>Commit → push → Pull Request.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="alert alert-success mb-0">
+                <strong>Checklist:</strong>
+                Modelo → Rotas → Banco → Template → Jinja2 → CSS/menu → Teste → Commit → Push → Pull Request.
+            </div>
+        </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="card mb-4" id="git">
+        <div class="card-body">
+            <h2 class="h4">10. GET/POST da aplicação × push do Git</h2>
+            <p>
+                Não confunda os dois conceitos:
+                <strong>GET e POST</strong> são métodos HTTP usados pela aplicação;
+                <strong>push</strong> é um comando do Git para enviar os commits da sua branch ao GitHub.
+            </p>
+            <pre class="bg-light p-3 rounded">git checkout -b feature/minha-funcionalidade
+# desenvolver e testar
+git add .
+git commit -m "Implementa minha funcionalidade"
+git push -u origin feature/minha-funcionalidade</pre>
+            <p class="mb-0">
+                Depois do push, o grupo abre o <strong>Pull Request</strong> para solicitar a integração da alteração.
+            </p>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

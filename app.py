@@ -887,6 +887,12 @@ def documentacao_auxiliar():
     return render_template("documentacao_auxiliar.html")
 
 
+@app.route("/roteiro-desenvolvimento-3009")
+def roteiro_desenvolvimento_3009():
+    """Exibe o roteiro completo da prática de desenvolvimento do dia 30/09."""
+    return render_template("roteiro_desenvolvimento_3009.html")
+
+
 @app.route("/guia-git")
 def guia_git():
     """Atalho para o guia de Git e integração."""

@@ -1,0 +1,1851 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- =========================================================
+         CABEÇALHO
+         ========================================================= -->
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="h3 mb-1">
+                Roteiro de Desenvolvimento — 30/09
+            </h1>
+
+            <p class="text-secondary mb-0">
+                Guia completo e didático para desenvolver uma funcionalidade,
+                trabalhar com Git e integrar a alteração ao repositório do LOGIEXPRESS.
+            </p>
+        </div>
+
+        <span class="badge text-bg-dark fs-6 mt-2 mt-md-0">
+            RAD Python • Git • GitHub
+        </span>
+
+    </div>
+
+
+    <!-- =========================================================
+         OBJETIVO
+         ========================================================= -->
+
+    <div class="alert alert-primary shadow-sm">
+
+        <h2 class="h5">
+            🎯 Objetivo da prática
+        </h2>
+
+        <p class="mb-2">
+            Você fará o trabalho como uma equipe de desenvolvimento de software.
+            A aplicação LOGIEXPRESS já está funcionando. Sua tarefa é partir de uma
+            versão existente, criar uma <strong>branch própria</strong>, desenvolver
+            uma nova funcionalidade, testar, registrar as alterações com Git,
+            publicar sua branch no GitHub e abrir um <strong>Pull Request para a branch
+            <code>develop</code></strong>.
+        </p>
+
+        <p class="mb-0">
+            <strong>Importante:</strong> a <code>main</code> representa a versão
+            principal do produto e não deve ser utilizada diretamente para o desenvolvimento
+            das funcionalidades da prática.
+        </p>
+
+    </div>
+
+
+    <!-- =========================================================
+         MAPA GERAL
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            🧭 O roteiro completo em uma única visão
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 text-center">
+
+                {% for numero, titulo, descricao in [
+                    ("1", "Sincronizar", "Atualizar a branch develop"),
+                    ("2", "Criar branch", "Abrir uma linha de desenvolvimento"),
+                    ("3", "Entender arquivos", "Localizar onde a funcionalidade será criada"),
+                    ("4", "Desenvolver", "Alterar código, banco e telas"),
+                    ("5", "Testar", "Executar e validar a aplicação"),
+                    ("6", "Commit", "Registrar uma versão das alterações"),
+                    ("7", "Push", "Publicar a branch no GitHub"),
+                    ("8", "Pull Request", "Solicitar integração em develop"),
+                    ("9", "Merge", "Professor integra a funcionalidade")
+                ] %}
+
+                    <div class="col-6 col-md-4 col-lg-3">
+
+                        <div class="border rounded p-3 h-100 bg-light">
+
+                            <div class="fw-bold fs-3">
+                                {{ numero }}
+                            </div>
+
+                            <div class="fw-semibold">
+                                {{ titulo }}
+                            </div>
+
+                            <div class="small text-secondary mt-1">
+                                {{ descricao }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         IMAGEM 1
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            1. Comece pelo projeto existente
+        </div>
+
+        <div class="card-body">
+
+            <div class="border rounded bg-light p-3 mb-3 text-center">
+
+                <svg viewBox="0 0 1000 300" class="img-fluid" role="img"
+                     aria-label="Fluxo inicial do projeto LOGIEXPRESS">
+
+                    <rect x="40" y="80" width="190" height="110" rx="18"
+                          fill="#212529"/>
+                    <text x="135" y="125" text-anchor="middle" fill="white"
+                          font-size="24" font-weight="bold">GitHub</text>
+                    <text x="135" y="158" text-anchor="middle" fill="white"
+                          font-size="17">repositório</text>
+
+                    <line x1="230" y1="135" x2="370" y2="135"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="370,135 345,120 345,150" fill="#6c757d"/>
+
+                    <rect x="370" y="80" width="250" height="110" rx="18"
+                          fill="#f8f9fa" stroke="#212529" stroke-width="3"/>
+                    <text x="495" y="125" text-anchor="middle"
+                          font-size="24" font-weight="bold">develop</text>
+                    <text x="495" y="158" text-anchor="middle"
+                          font-size="17">base de trabalho</text>
+
+                    <line x1="620" y1="135" x2="760" y2="135"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="760,135 735,120 735,150" fill="#6c757d"/>
+
+                    <rect x="760" y="80" width="200" height="110" rx="18"
+                          fill="#fff3cd" stroke="#856404" stroke-width="3"/>
+                    <text x="860" y="125" text-anchor="middle"
+                          font-size="23" font-weight="bold">feature</text>
+                    <text x="860" y="158" text-anchor="middle"
+                          font-size="17">sua funcionalidade</text>
+
+                    <text x="500" y="245" text-anchor="middle"
+                          font-size="19" fill="#495057">
+                        Nunca comece o desenvolvimento em uma cópia desatualizada.
+                    </text>
+
+                </svg>
+
+            </div>
+
+            <p>
+                O primeiro passo não é sair alterando o código. Antes de desenvolver,
+                você precisa garantir que está trabalhando sobre a versão mais atual
+                da <code>develop</code>.
+            </p>
+
+            <div class="alert alert-info mb-0">
+                <strong>Regra da prática:</strong>
+                primeiro sincronize, depois crie sua branch e somente então comece a alterar os arquivos.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         IMAGEM 2 - SINCRONIZAÇÃO
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            2. Sincronize a branch <code>develop</code>
+        </div>
+
+        <div class="card-body">
+
+            <div class="border rounded bg-light p-3 mb-3 text-center">
+
+                <svg viewBox="0 0 1000 280" class="img-fluid" role="img"
+                     aria-label="Comandos para sincronizar develop">
+
+                    <rect x="80" y="55" width="220" height="90" rx="15"
+                          fill="#212529"/>
+                    <text x="190" y="95" text-anchor="middle" fill="white"
+                          font-size="22" font-weight="bold">origin/develop</text>
+                    <text x="190" y="125" text-anchor="middle" fill="white"
+                          font-size="16">GitHub</text>
+
+                    <line x1="300" y1="100" x2="410" y2="100"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="410,100 385,85 385,115" fill="#6c757d"/>
+
+                    <rect x="410" y="55" width="230" height="90" rx="15"
+                          fill="#f8f9fa" stroke="#212529" stroke-width="3"/>
+                    <text x="525" y="95" text-anchor="middle"
+                          font-size="22" font-weight="bold">develop local</text>
+                    <text x="525" y="125" text-anchor="middle"
+                          font-size="16">Codespace</text>
+
+                    <line x1="640" y1="100" x2="750" y2="100"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="750,100 725,85 725,115" fill="#6c757d"/>
+
+                    <rect x="750" y="55" width="170" height="90" rx="15"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="3"/>
+                    <text x="835" y="95" text-anchor="middle"
+                          font-size="21" font-weight="bold">pronto</text>
+                    <text x="835" y="125" text-anchor="middle"
+                          font-size="16">para criar branch</text>
+
+                    <text x="500" y="220" text-anchor="middle"
+                          font-size="18" fill="#495057">
+                        fetch → checkout → pull
+                    </text>
+
+                </svg>
+
+            </div>
+
+            <p>
+                Abra o terminal do Codespace e execute os comandos abaixo.
+                Execute <strong>um comando por vez</strong> e observe o resultado.
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git fetch origin
+git checkout develop
+git pull origin develop</code></pre>
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <div class="border rounded p-3 h-100">
+                        <strong>git fetch origin</strong>
+                        <p class="small text-secondary mb-0 mt-2">
+                            Consulta o repositório remoto e atualiza as referências
+                            locais. Não altera seus arquivos de trabalho.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="border rounded p-3 h-100">
+                        <strong>git checkout develop</strong>
+                        <p class="small text-secondary mb-0 mt-2">
+                            Muda para a branch local <code>develop</code>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="border rounded p-3 h-100">
+                        <strong>git pull origin develop</strong>
+                        <p class="small text-secondary mb-0 mt-2">
+                            Traz as alterações mais recentes de
+                            <code>origin/develop</code> para sua branch local.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="alert alert-warning mt-3 mb-0">
+                <strong>Confira:</strong> se o Git informar que sua branch está
+                atualizada, você pode continuar.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         IMAGEM 3 - BRANCH
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            3. Crie sua branch de funcionalidade
+        </div>
+
+        <div class="card-body">
+
+            <div class="border rounded bg-light p-3 mb-3 text-center">
+
+                <svg viewBox="0 0 1000 330" class="img-fluid" role="img"
+                     aria-label="Criação de uma branch de funcionalidade">
+
+                    <line x1="130" y1="165" x2="850" y2="165"
+                          stroke="#adb5bd" stroke-width="6"/>
+
+                    <circle cx="180" cy="165" r="35" fill="#212529"/>
+                    <text x="180" y="173" text-anchor="middle" fill="white"
+                          font-size="18">D</text>
+                    <text x="180" y="225" text-anchor="middle"
+                          font-size="18" font-weight="bold">develop</text>
+
+                    <line x1="215" y1="165" x2="420" y2="85"
+                          stroke="#fd7e14" stroke-width="6"/>
+                    <polygon points="420,85 390,80 405,105" fill="#fd7e14"/>
+
+                    <circle cx="470" cy="65" r="35" fill="#fd7e14"/>
+                    <text x="470" y="73" text-anchor="middle" fill="white"
+                          font-size="18">F</text>
+                    <text x="470" y="20" text-anchor="middle"
+                          font-size="18" font-weight="bold">feature</text>
+
+                    <line x1="505" y1="65" x2="760" y2="65"
+                          stroke="#fd7e14" stroke-width="6"/>
+                    <circle cx="800" cy="65" r="35" fill="#fd7e14"/>
+                    <text x="800" y="73" text-anchor="middle" fill="white"
+                          font-size="18">F</text>
+
+                    <text x="500" y="285" text-anchor="middle"
+                          font-size="19" fill="#495057">
+                        A branch cria uma linha de desenvolvimento isolada.
+                    </text>
+
+                </svg>
+
+            </div>
+
+            <p>
+                Cada grupo deve possuir uma branch própria. O nome deve indicar
+                claramente a funcionalidade que será desenvolvida.
+            </p>
+
+            <p class="mb-2">
+                Exemplo para o desafio <strong>Manutenção de veículos</strong>:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git checkout -b feature/manutencao-veiculos</code></pre>
+
+            <p class="mb-2">
+                Outros exemplos:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git checkout -b feature/controle-combustivel
+git checkout -b feature/gestao-ocorrencias
+git checkout -b feature/controle-sla
+git checkout -b feature/controle-estoque
+git checkout -b feature/timeline-entrega</code></pre>
+
+            <p>
+                Depois confirme em qual branch você está:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git branch</code></pre>
+
+            <div class="alert alert-success mb-0">
+                A branch marcada com <strong>*</strong> deve ser a sua
+                <code>feature/...</code>.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         IMAGEM 4 - ARQUIVOS
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            4. Saiba exatamente quais arquivos podem ser alterados
+        </div>
+
+        <div class="card-body">
+
+            <div class="border rounded bg-light p-3 mb-3 text-center">
+
+                <svg viewBox="0 0 1000 330" class="img-fluid" role="img"
+                     aria-label="Arquivos principais do projeto LOGIEXPRESS">
+
+                    <rect x="55" y="75" width="190" height="80" rx="14"
+                          fill="#212529"/>
+                    <text x="150" y="108" text-anchor="middle" fill="white"
+                          font-size="20" font-weight="bold">app.py</text>
+                    <text x="150" y="135" text-anchor="middle" fill="white"
+                          font-size="14">modelo + rotas</text>
+
+                    <rect x="280" y="75" width="190" height="80" rx="14"
+                          fill="#e9ecef" stroke="#212529" stroke-width="2"/>
+                    <text x="375" y="108" text-anchor="middle"
+                          font-size="20" font-weight="bold">templates/</text>
+                    <text x="375" y="135" text-anchor="middle"
+                          font-size="14">HTML + Jinja2</text>
+
+                    <rect x="505" y="75" width="190" height="80" rx="14"
+                          fill="#e9ecef" stroke="#212529" stroke-width="2"/>
+                    <text x="600" y="108" text-anchor="middle"
+                          font-size="20" font-weight="bold">static/</text>
+                    <text x="600" y="135" text-anchor="middle"
+                          font-size="14">CSS + imagens</text>
+
+                    <rect x="730" y="75" width="190" height="80" rx="14"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="2"/>
+                    <text x="825" y="108" text-anchor="middle"
+                          font-size="20" font-weight="bold">tests/</text>
+                    <text x="825" y="135" text-anchor="middle"
+                          font-size="14">validação</text>
+
+                    <line x1="150" y1="155" x2="150" y2="215"
+                          stroke="#6c757d" stroke-width="4"/>
+                    <line x1="375" y1="155" x2="375" y2="215"
+                          stroke="#6c757d" stroke-width="4"/>
+                    <line x1="600" y1="155" x2="600" y2="215"
+                          stroke="#6c757d" stroke-width="4"/>
+                    <line x1="825" y1="155" x2="825" y2="215"
+                          stroke="#6c757d" stroke-width="4"/>
+
+                    <text x="500" y="260" text-anchor="middle"
+                          font-size="18" fill="#495057">
+                        Uma funcionalidade normalmente envolve backend + tela + validação.
+                    </text>
+
+                </svg>
+
+            </div>
+
+            <h3 class="h5">
+                🗂️ Mapa prático dos arquivos
+            </h3>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Arquivo / pasta</th>
+                            <th>Quando alterar?</th>
+                            <th>O que normalmente entra aqui?</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td><code>app.py</code></td>
+                            <td>Quase todas as novas funcionalidades</td>
+                            <td>Modelos SQLAlchemy, regras, consultas e rotas Flask.</td>
+                        </tr>
+
+                        <tr>
+                            <td><code>templates/</code></td>
+                            <td>Quando a funcionalidade precisa de telas</td>
+                            <td>HTML, formulários, tabelas, cards e Jinja2.</td>
+                        </tr>
+
+                        <tr>
+                            <td><code>static/style.css</code></td>
+                            <td>Quando for necessário ajustar o visual</td>
+                            <td>Espaçamento, cards, tabelas, cores e responsividade.</td>
+                        </tr>
+
+                        <tr>
+                            <td><code>templates/base.html</code></td>
+                            <td>Quando for necessário adicionar uma entrada ao menu</td>
+                            <td>Links de navegação do sistema.</td>
+                        </tr>
+
+                        <tr>
+                            <td><code>tests/</code></td>
+                            <td>Quando houver teste automatizado</td>
+                            <td>Testes das rotas e regras principais.</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="alert alert-warning mb-0">
+                <strong>Atenção:</strong>
+                não altere arquivos que não tenham relação com sua funcionalidade.
+                Quanto menor e mais organizado for o conjunto de alterações,
+                mais fácil será revisar e integrar o Pull Request.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         EXEMPLO DE DESENVOLVIMENTO
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            5. Exemplo completo — Manutenção de veículos
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                O exemplo abaixo mostra a lógica de desenvolvimento. Ele não deve
+                ser simplesmente copiado sem entendimento. A equipe deve adaptar
+                os nomes, campos e regras à funcionalidade escolhida.
+            </p>
+
+            <h3 class="h5 mt-3">
+                5.1 Criar o modelo no <code>app.py</code>
+            </h3>
+
+            <p>
+                Uma manutenção precisa estar relacionada a um veículo.
+                Um modelo simplificado poderia ser:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>class Manutencao(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    veiculo_id = db.Column(
+        db.Integer,
+        db.ForeignKey("veiculo.id"),
+        nullable=False
+    )
+    data = db.Column(db.Date, nullable=False)
+    tipo = db.Column(db.String(50), nullable=False)
+    descricao = db.Column(db.String(255), nullable=False)
+    custo = db.Column(db.Numeric(12, 2), nullable=False)
+    status = db.Column(db.String(30), default="ABERTA")
+
+    veiculo = db.relationship("Veiculo")</code></pre>
+
+            <div class="alert alert-info">
+                <strong>O que esse código representa?</strong>
+                A classe representa uma tabela no banco. Cada atributo representa
+                uma coluna. <code>veiculo_id</code> cria a relação entre a manutenção
+                e o veículo.
+            </div>
+
+            <h3 class="h5 mt-4">
+                5.2 Criar uma rota Flask
+            </h3>
+
+            <pre class="bg-dark text-light rounded p-3"><code>@app.route("/manutencoes")
+def manutencoes():
+    registros = Manutencao.query.order_by(
+        Manutencao.data.desc()
+    ).all()
+
+    return render_template(
+        "manutencoes/list.html",
+        registros=registros
+    )</code></pre>
+
+            <p>
+                Essa rota consulta os dados e envia o resultado para uma página HTML.
+            </p>
+
+            <h3 class="h5 mt-4">
+                5.3 Criar o template
+            </h3>
+
+            <p>
+                Crie a pasta <code>templates/manutencoes/</code> e dentro dela
+                o arquivo <code>list.html</code>.
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>{% raw %}{% extends "base.html" %}
+
+{% block content %}
+
+&lt;h1&gt;Manutenção de veículos&lt;/h1&gt;
+
+&lt;table class="table"&gt;
+
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Veículo&lt;/th&gt;
+            &lt;th&gt;Data&lt;/th&gt;
+            &lt;th&gt;Tipo&lt;/th&gt;
+            &lt;th&gt;Custo&lt;/th&gt;
+            &lt;th&gt;Status&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+
+    &lt;tbody&gt;
+
+        {% for item in registros %}
+
+        &lt;tr&gt;
+            &lt;td&gt;{{ item.veiculo.placa }}&lt;/td&gt;
+            &lt;td&gt;{{ item.data.strftime("%d/%m/%Y") }}&lt;/td&gt;
+            &lt;td&gt;{{ item.tipo }}&lt;/td&gt;
+            &lt;td&gt;R$ {{ item.custo }}&lt;/td&gt;
+            &lt;td&gt;{{ item.status }}&lt;/td&gt;
+        &lt;/tr&gt;
+
+        {% endfor %}
+
+    &lt;/tbody&gt;
+
+&lt;/table&gt;
+
+{% endblock %}{% endraw %}</code></pre>
+
+            <h3 class="h5 mt-4">
+                5.4 Teste a navegação
+            </h3>
+
+            <p>
+                Depois de criar a rota e o template, teste a aplicação no navegador.
+                Se o endereço for <code>/manutencoes</code>, a rota precisa existir
+                e o template precisa estar no caminho esperado.
+            </p>
+
+            <div class="alert alert-warning mb-0">
+                <strong>Regra importante:</strong>
+                antes de pensar em Git, faça a funcionalidade funcionar.
+                Depois registre e publique o resultado.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         IMAGEM 5 - TESTE
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            6. Teste antes de fazer o commit
+        </div>
+
+        <div class="card-body">
+
+            <div class="border rounded bg-light p-3 mb-3 text-center">
+
+                <svg viewBox="0 0 1000 280" class="img-fluid" role="img"
+                     aria-label="Fluxo de teste">
+
+                    <rect x="55" y="75" width="190" height="90" rx="15"
+                          fill="#212529"/>
+                    <text x="150" y="110" text-anchor="middle" fill="white"
+                          font-size="21" font-weight="bold">Código</text>
+                    <text x="150" y="138" text-anchor="middle" fill="white"
+                          font-size="15">alterado</text>
+
+                    <line x1="245" y1="120" x2="370" y2="120"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="370,120 345,105 345,135" fill="#6c757d"/>
+
+                    <rect x="370" y="75" width="220" height="90" rx="15"
+                          fill="#e9ecef" stroke="#212529" stroke-width="2"/>
+                    <text x="480" y="110" text-anchor="middle"
+                          font-size="21" font-weight="bold">Flask</text>
+                    <text x="480" y="138" text-anchor="middle"
+                          font-size="15">executar + validar</text>
+
+                    <line x1="590" y1="120" x2="715" y2="120"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="715,120 690,105 690,135" fill="#6c757d"/>
+
+                    <rect x="715" y="75" width="230" height="90" rx="15"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="2"/>
+                    <text x="830" y="110" text-anchor="middle"
+                          font-size="21" font-weight="bold">Navegador</text>
+                    <text x="830" y="138" text-anchor="middle"
+                          font-size="15">resultado esperado</text>
+
+                    <text x="500" y="225" text-anchor="middle"
+                          font-size="18" fill="#495057">
+                        Teste primeiro. Commit depois.
+                    </text>
+
+                </svg>
+
+            </div>
+
+            <p>
+                Execute a aplicação como você fez no dia 29/09:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>python app.py</code></pre>
+
+            <p>
+                Depois abra a aplicação pelo navegador e teste:
+            </p>
+
+            <ul>
+                <li>menu;</li>
+                <li>rota criada;</li>
+                <li>formulário;</li>
+                <li>cadastro;</li>
+                <li>edição;</li>
+                <li>exclusão, quando existir;</li>
+                <li>validações;</li>
+                <li>mensagens de erro e sucesso;</li>
+                <li>visualização em diferentes tamanhos de tela.</li>
+            </ul>
+
+            <p>
+                Se o projeto possuir testes automatizados para a funcionalidade,
+                execute também:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>pytest -q</code></pre>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         IMAGEM 6 - STATUS DIFF ADD
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            7. Veja exatamente o que foi alterado
+        </div>
+
+        <div class="card-body">
+
+            <div class="border rounded bg-light p-3 mb-3 text-center">
+
+                <svg viewBox="0 0 1000 280" class="img-fluid" role="img"
+                     aria-label="Fluxo status diff add">
+
+                    <rect x="50" y="70" width="190" height="90" rx="15"
+                          fill="#e9ecef" stroke="#212529" stroke-width="2"/>
+                    <text x="145" y="108" text-anchor="middle"
+                          font-size="21" font-weight="bold">git status</text>
+                    <text x="145" y="135" text-anchor="middle"
+                          font-size="15">o que mudou?</text>
+
+                    <line x1="240" y1="115" x2="350" y2="115"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="350,115 325,100 325,130" fill="#6c757d"/>
+
+                    <rect x="350" y="70" width="190" height="90" rx="15"
+                          fill="#e9ecef" stroke="#212529" stroke-width="2"/>
+                    <text x="445" y="108" text-anchor="middle"
+                          font-size="21" font-weight="bold">git diff</text>
+                    <text x="445" y="135" text-anchor="middle"
+                          font-size="15">o que mudou no código?</text>
+
+                    <line x1="540" y1="115" x2="650" y2="115"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="650,115 625,100 625,130" fill="#6c757d"/>
+
+                    <rect x="650" y="70" width="190" height="90" rx="15"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="2"/>
+                    <text x="745" y="108" text-anchor="middle"
+                          font-size="21" font-weight="bold">git add</text>
+                    <text x="745" y="135" text-anchor="middle"
+                          font-size="15">preparar commit</text>
+
+                    <text x="500" y="220" text-anchor="middle"
+                          font-size="18" fill="#495057">
+                        Antes de registrar, confira o conteúdo.
+                    </text>
+
+                </svg>
+
+            </div>
+
+            <p>Primeiro:</p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git status</code></pre>
+
+            <p>
+                O Git mostrará arquivos modificados, novos arquivos ou arquivos removidos.
+            </p>
+
+            <p>Depois, veja as diferenças:</p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git diff</code></pre>
+
+            <p>
+                Quando estiver seguro de que as alterações pertencem à sua funcionalidade:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git add .</code></pre>
+
+            <div class="alert alert-warning mb-0">
+                <strong>Por que conferir?</strong>
+                O comando <code>git add .</code> prepara todas as alterações do diretório.
+                Por isso, <code>git status</code> e <code>git diff</code> são importantes
+                para evitar enviar arquivos que não fazem parte do seu desafio.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         IMAGEM 7 - COMMIT
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            8. Crie o commit
+        </div>
+
+        <div class="card-body">
+
+            <div class="border rounded bg-light p-3 mb-3 text-center">
+
+                <svg viewBox="0 0 1000 260" class="img-fluid" role="img"
+                     aria-label="Commit registra uma versão">
+
+                    <rect x="90" y="70" width="240" height="90" rx="15"
+                          fill="#e9ecef" stroke="#212529" stroke-width="2"/>
+                    <text x="210" y="108" text-anchor="middle"
+                          font-size="21" font-weight="bold">git add</text>
+                    <text x="210" y="136" text-anchor="middle"
+                          font-size="15">alterações preparadas</text>
+
+                    <line x1="330" y1="115" x2="440" y2="115"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="440,115 415,100 415,130" fill="#6c757d"/>
+
+                    <rect x="440" y="70" width="250" height="90" rx="15"
+                          fill="#212529"/>
+                    <text x="565" y="108" text-anchor="middle" fill="white"
+                          font-size="21" font-weight="bold">git commit</text>
+                    <text x="565" y="136" text-anchor="middle" fill="white"
+                          font-size="15">versão registrada</text>
+
+                    <line x1="690" y1="115" x2="800" y2="115"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="800,115 775,100 775,130" fill="#6c757d"/>
+
+                    <rect x="800" y="70" width="120" height="90" rx="15"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="2"/>
+                    <text x="860" y="108" text-anchor="middle"
+                          font-size="20" font-weight="bold">Git</text>
+                    <text x="860" y="136" text-anchor="middle"
+                          font-size="15">histórico</text>
+
+                    <text x="500" y="215" text-anchor="middle"
+                          font-size="18" fill="#495057">
+                        Um bom commit explica o que foi alterado.
+                    </text>
+
+                </svg>
+
+            </div>
+
+            <p>
+                Registre a alteração com uma mensagem clara:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git commit -m "Implementa manutenção de veículos"</code></pre>
+
+            <p>
+                Exemplos:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git commit -m "Implementa controle de combustível"
+git commit -m "Implementa gestão de ocorrências"
+git commit -m "Implementa controle de SLA"
+git commit -m "Implementa timeline de entrega"</code></pre>
+
+            <div class="alert alert-info mb-0">
+                <strong>Commit não é push.</strong>
+                O <code>commit</code> registra a versão no histórico local do Git.
+                O <code>push</code> publica essa versão no GitHub.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         IMAGEM 8 - PUSH
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            9. Publique sua branch no GitHub
+        </div>
+
+        <div class="card-body">
+
+            <div class="border rounded bg-light p-3 mb-3 text-center">
+
+                <svg viewBox="0 0 1000 280" class="img-fluid" role="img"
+                     aria-label="Push publica a branch no GitHub">
+
+                    <rect x="80" y="75" width="220" height="90" rx="15"
+                          fill="#e9ecef" stroke="#212529" stroke-width="2"/>
+                    <text x="190" y="112" text-anchor="middle"
+                          font-size="21" font-weight="bold">feature local</text>
+                    <text x="190" y="140" text-anchor="middle"
+                          font-size="15">Codespace</text>
+
+                    <line x1="300" y1="120" x2="420" y2="120"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="420,120 395,105 395,135" fill="#6c757d"/>
+
+                    <rect x="420" y="75" width="250" height="90" rx="15"
+                          fill="#212529"/>
+                    <text x="545" y="112" text-anchor="middle" fill="white"
+                          font-size="21" font-weight="bold">git push</text>
+                    <text x="545" y="140" text-anchor="middle" fill="white"
+                          font-size="15">origin</text>
+
+                    <line x1="670" y1="120" x2="790" y2="120"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="790,120 765,105 765,135" fill="#6c757d"/>
+
+                    <rect x="790" y="75" width="140" height="90" rx="15"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="2"/>
+                    <text x="860" y="112" text-anchor="middle"
+                          font-size="21" font-weight="bold">GitHub</text>
+                    <text x="860" y="140" text-anchor="middle"
+                          font-size="15">branch</text>
+
+                    <text x="500" y="225" text-anchor="middle"
+                          font-size="18" fill="#495057">
+                        A branch remota permite que o professor revise sua alteração.
+                    </text>
+
+                </svg>
+
+            </div>
+
+            <p>
+                Na primeira publicação da branch, utilize:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git push -u origin feature/manutencao-veiculos</code></pre>
+
+            <p>
+                Depois disso, novos pushes dessa mesma branch podem ser feitos com:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git push</code></pre>
+
+            <div class="alert alert-warning">
+                <strong>Erro 403 / permission denied?</strong>
+                Isso normalmente significa que sua conta não possui permissão de escrita
+                no repositório do professor. Nesse caso, pare e informe o professor;
+                não tente contornar a permissão.
+            </div>
+
+            <div class="alert alert-info mb-0">
+                <strong>O objetivo do push é publicar sua branch.</strong>
+                A integração com <code>develop</code> acontece depois, por meio do Pull Request.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         IMAGEM 9 - PR + MERGE
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            10. Pull Request → revisão → integração
+        </div>
+
+        <div class="card-body">
+
+            <div class="border rounded bg-light p-3 mb-3 text-center">
+
+                <svg viewBox="0 0 1000 340" class="img-fluid" role="img"
+                     aria-label="Pull Request e integração em develop">
+
+                    <rect x="45" y="70" width="180" height="80" rx="15"
+                          fill="#e9ecef" stroke="#212529" stroke-width="2"/>
+                    <text x="135" y="105" text-anchor="middle"
+                          font-size="20" font-weight="bold">feature</text>
+                    <text x="135" y="130" text-anchor="middle"
+                          font-size="14">sua branch</text>
+
+                    <line x1="225" y1="110" x2="340" y2="110"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="340,110 315,95 315,125" fill="#6c757d"/>
+
+                    <rect x="340" y="70" width="210" height="80" rx="15"
+                          fill="#212529"/>
+                    <text x="445" y="105" text-anchor="middle" fill="white"
+                          font-size="20" font-weight="bold">Pull Request</text>
+                    <text x="445" y="130" text-anchor="middle" fill="white"
+                          font-size="14">para develop</text>
+
+                    <line x1="550" y1="110" x2="665" y2="110"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="665,110 640,95 640,125" fill="#6c757d"/>
+
+                    <rect x="665" y="70" width="160" height="80" rx="15"
+                          fill="#fff3cd" stroke="#856404" stroke-width="2"/>
+                    <text x="745" y="105" text-anchor="middle"
+                          font-size="20" font-weight="bold">Revisão</text>
+                    <text x="745" y="130" text-anchor="middle"
+                          font-size="14">professor</text>
+
+                    <line x1="745" y1="150" x2="745" y2="220"
+                          stroke="#198754" stroke-width="6"/>
+                    <polygon points="745,220 730,195 760,195" fill="#198754"/>
+
+                    <rect x="665" y="220" width="160" height="80" rx="15"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="2"/>
+                    <text x="745" y="255" text-anchor="middle"
+                          font-size="20" font-weight="bold">Merge</text>
+                    <text x="745" y="280" text-anchor="middle"
+                          font-size="14">develop</text>
+
+                    <line x1="665" y1="260" x2="470" y2="260"
+                          stroke="#198754" stroke-width="6"/>
+                    <polygon points="470,260 495,245 495,275" fill="#198754"/>
+
+                    <text x="300" y="265" text-anchor="middle"
+                          font-size="20" font-weight="bold">develop atualizado</text>
+
+                </svg>
+
+            </div>
+
+            <h3 class="h5">
+                10.1 Criar o Pull Request
+            </h3>
+
+            <p>
+                Depois do <code>git push</code>, abra o GitHub e localize sua branch.
+                Clique para criar um Pull Request.
+            </p>
+
+            <p>
+                O destino deve ser:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>base: develop
+compare: feature/manutencao-veiculos</code></pre>
+
+            <p>
+                Título sugerido:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>Implementa manutenção de veículos</code></pre>
+
+            <p>
+                No corpo do Pull Request, explique:
+            </p>
+
+            <ul>
+                <li>qual problema foi resolvido;</li>
+                <li>qual funcionalidade foi criada;</li>
+                <li>quais arquivos foram alterados;</li>
+                <li>como a funcionalidade foi testada;</li>
+                <li>se existe algum ponto que precisa de atenção.</li>
+            </ul>
+
+            <h3 class="h5 mt-4">
+                10.2 O que acontece depois?
+            </h3>
+
+            <p>
+                O Pull Request será revisado. Se houver correções solicitadas,
+                você volta para sua branch, altera o código, testa novamente,
+                faz outro commit e executa:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git add .
+git commit -m "Corrige validação da manutenção"
+git push</code></pre>
+
+            <p>
+                O mesmo Pull Request será atualizado automaticamente.
+            </p>
+
+            <h3 class="h5 mt-4">
+                10.3 Integração
+            </h3>
+
+            <p>
+                Depois da aprovação, o professor fará a integração da branch
+                em <code>develop</code>. A branch <code>main</code> permanece
+                reservada para a versão principal do produto.
+            </p>
+
+            <div class="alert alert-success mb-0">
+                <strong>Você concluiu o ciclo:</strong>
+                branch → desenvolvimento → teste → commit → push →
+                Pull Request → revisão → merge.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         COMANDOS COMPLETOS
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4 border-primary">
+
+        <div class="card-header fw-semibold text-primary">
+            📋 Roteiro de comandos — copiar e colar
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                Para o grupo que está desenvolvendo a funcionalidade
+                <strong>Manutenção de veículos</strong>, o roteiro completo é:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code># 1. Atualizar referências
+git fetch origin
+
+# 2. Ir para develop
+git checkout develop
+
+# 3. Atualizar develop local
+git pull origin develop
+
+# 4. Criar a branch da funcionalidade
+git checkout -b feature/manutencao-veiculos
+
+# 5. Confirmar a branch atual
+git branch
+
+# 6. Desenvolver e testar a funcionalidade
+python app.py
+
+# 7. Verificar as alterações
+git status
+
+# 8. Conferir as diferenças
+git diff
+
+# 9. Preparar as alterações
+git add .
+
+# 10. Criar o commit
+git commit -m "Implementa manutenção de veículos"
+
+# 11. Publicar a branch no GitHub
+git push -u origin feature/manutencao-veiculos
+
+# 12. Depois do push, abrir o Pull Request no GitHub
+#    base: develop
+#    compare: feature/manutencao-veiculos</code></pre>
+
+            <div class="alert alert-warning">
+                <strong>Não execute tudo de uma vez.</strong>
+                O bloco serve como roteiro. Os comandos de desenvolvimento,
+                teste e Git devem ser executados em etapas, conferindo o resultado
+                de cada uma.
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         SITUAÇÕES COMUNS E SOLUÇÕES
+         ========================================================= -->
+    <div class="card shadow-sm mb-4 border-warning">
+        <div class="card-header fw-semibold text-warning-emphasis">
+            🛠️ Situações comuns — o que fazer quando algo dá errado?
+        </div>
+        <div class="card-body">
+            <p>
+                Durante o desenvolvimento, mensagens de erro e avisos são normais.
+                O objetivo é aprender a <strong>interpretar a mensagem</strong>,
+                diagnosticar a causa e executar o procedimento correto.
+            </p>
+
+            <div class="border rounded bg-light p-3 mb-4 text-center">
+                <svg viewBox="0 0 1000 260" class="img-fluid" role="img"
+                     aria-label="Fluxo para diagnosticar problemas">
+                    <rect x="50" y="70" width="200" height="85" rx="15"
+                          fill="#fff3cd" stroke="#856404" stroke-width="3"/>
+                    <text x="150" y="108" text-anchor="middle"
+                          font-size="20" font-weight="bold">Mensagem</text>
+                    <text x="150" y="134" text-anchor="middle"
+                          font-size="14">erro ou aviso</text>
+                    <line x1="250" y1="112" x2="380" y2="112"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="380,112 355,97 355,127" fill="#6c757d"/>
+                    <rect x="380" y="70" width="240" height="85" rx="15"
+                          fill="#e9ecef" stroke="#212529" stroke-width="2"/>
+                    <text x="500" y="108" text-anchor="middle"
+                          font-size="20" font-weight="bold">Diagnóstico</text>
+                    <text x="500" y="134" text-anchor="middle"
+                          font-size="14">verifique a causa</text>
+                    <line x1="620" y1="112" x2="750" y2="112"
+                          stroke="#6c757d" stroke-width="6"/>
+                    <polygon points="750,112 725,97 725,127" fill="#6c757d"/>
+                    <rect x="750" y="70" width="200" height="85" rx="15"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="3"/>
+                    <text x="850" y="108" text-anchor="middle"
+                          font-size="20" font-weight="bold">Correção</text>
+                    <text x="850" y="134" text-anchor="middle"
+                          font-size="14">execute o procedimento</text>
+                    <text x="500" y="210" text-anchor="middle"
+                          font-size="17" fill="#495057">
+                        Leia a mensagem antes de tentar outros comandos.
+                    </text>
+                </svg>
+            </div>
+
+            <h3 class="h5">🔴 Situação 1 — A porta 5000 já está em uso</h3>
+            <p>
+                Isso acontece quando outro processo já está executando o Flask na porta 5000,
+                por exemplo, quando <code>python3 app.py</code> foi iniciado novamente sem
+                encerrar a execução anterior.
+            </p>
+            <pre class="bg-dark text-light rounded p-3"><code>Address already in use
+Port 5000 is in use by another program.</code></pre>
+            <p><strong>1. Descubra quem está usando a porta:</strong></p>
+            <pre class="bg-dark text-light rounded p-3"><code>lsof -i :5000</code></pre>
+            <p>
+                Localize o <strong>PID</strong> apresentado. Exemplo:
+            </p>
+            <pre class="bg-dark text-light rounded p-3"><code>python3  6383
+python3  6417</code></pre>
+            <p><strong>2. Tente encerrar os processos identificados:</strong></p>
+            <pre class="bg-dark text-light rounded p-3"><code>kill 6383 6417</code></pre>
+            <div class="alert alert-warning">
+                <strong>Atenção:</strong> os números acima são apenas exemplos.
+                Use os PIDs mostrados pelo seu próprio <code>lsof -i :5000</code>.
+                Não copie os PIDs deste exemplo.
+            </div>
+
+            <p><strong>3. Confirme se a porta foi liberada:</strong></p>
+            <pre class="bg-dark text-light rounded p-3"><code>lsof -i :5000</code></pre>
+
+            <p>
+                Se o comando não retornar nenhuma linha, a porta está livre.
+                Nesse caso, vá para o passo 5.
+            </p>
+
+            <p><strong>4. Se o processo continuar ativo, force o encerramento:</strong></p>
+            <pre class="bg-dark text-light rounded p-3"><code>kill -9 6383 6417</code></pre>
+
+            <div class="alert alert-danger">
+                <strong>Use <code>kill -9</code> somente quando necessário.</strong>
+                Esse comando força o encerramento do processo. No laboratório,
+                utilize-o apenas nos PIDs que você identificou como responsáveis
+                pela execução do Flask.
+            </div>
+
+            <p>
+                Depois confirme novamente:
+            </p>
+            <pre class="bg-dark text-light rounded p-3"><code>lsof -i :5000</code></pre>
+
+            <p>
+                Se não aparecer nenhuma linha, a porta 5000 está livre.
+            </p>
+
+            <p><strong>5. Inicie novamente a aplicação:</strong></p>
+            <pre class="bg-dark text-light rounded p-3"><code>python3 app.py</code></pre>
+
+            <div class="border rounded bg-light p-3 mt-3">
+                <strong>Fluxo de diagnóstico:</strong>
+                <div class="small mt-2">
+                    <code>python3 app.py</code>
+                    → porta ocupada
+                    → <code>lsof -i :5000</code>
+                    → identificar PID
+                    → <code>kill PID</code>
+                    → verificar novamente
+                    → se necessário <code>kill -9 PID</code>
+                    → verificar
+                    → <code>python3 app.py</code>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <h3 class="h5">🔵 Situação 2 — Não sei em qual branch estou</h3>
+            <pre class="bg-dark text-light rounded p-3"><code>git branch</code></pre>
+            <p>
+                A branch marcada com <code>*</code> é a branch ativa.
+                Antes de alterar arquivos, confirme que você está na sua
+                <code>feature/...</code>.
+            </p>
+
+            <hr class="my-4">
+
+            <h3 class="h5">🟡 Situação 3 — Minha develop está desatualizada</h3>
+            <p>Atualize a branch antes de criar uma nova funcionalidade:</p>
+            <pre class="bg-dark text-light rounded p-3"><code>git fetch origin
+git checkout develop
+git pull origin develop</code></pre>
+
+            <hr class="my-4">
+
+            <h3 class="h5">🟠 Situação 4 — Não sei o que alterei</h3>
+            <p>Primeiro veja os arquivos modificados:</p>
+            <pre class="bg-dark text-light rounded p-3"><code>git status</code></pre>
+            <p>Depois confira exatamente as diferenças:</p>
+            <pre class="bg-dark text-light rounded p-3"><code>git diff</code></pre>
+            <div class="alert alert-info">
+                Use esses comandos antes de <code>git add .</code> para saber
+                o que será registrado.
+            </div>
+
+            <hr class="my-4">
+
+            <h3 class="h5">🟣 Situação 5 — Fiz commit, mas não aparece no GitHub</h3>
+            <p>
+                <code>commit</code> registra a alteração localmente.
+                <code>push</code> publica a branch no GitHub.
+            </p>
+            <pre class="bg-dark text-light rounded p-3"><code>git status
+git push</code></pre>
+
+            <hr class="my-4">
+
+            <h3 class="h5">🔴 Situação 6 — Apareceu 403 ou permission denied</h3>
+            <pre class="bg-dark text-light rounded p-3"><code>remote: Permission to ... denied
+fatal: unable to access ...</code></pre>
+            <div class="alert alert-danger">
+                Pare e informe o professor. A conta utilizada pode não possuir
+                permissão de escrita no repositório ou branch. Não tente contornar
+                a permissão.
+            </div>
+
+            <hr class="my-4">
+
+            <h3 class="h5">🟤 Situação 7 — O Pull Request está com destino errado</h3>
+            <p>Para a prática, confira:</p>
+            <pre class="bg-dark text-light rounded p-3"><code>base: develop
+compare: feature/manutencao-veiculos</code></pre>
+            <div class="alert alert-warning">
+                O fluxo esperado é <strong>feature → Pull Request → develop</strong>.
+                Não utilize <code>main</code> como destino da atividade.
+            </div>
+
+            <hr class="my-4">
+
+            <h3 class="h5">🟢 Situação 8 — O professor pediu uma correção no Pull Request</h3>
+            <p>
+                Continue na <strong>mesma branch</strong>. Não crie outra branch
+                apenas para corrigir o código.
+            </p>
+            <pre class="bg-dark text-light rounded p-3"><code>git status
+git diff
+git add .
+git commit -m "Corrige validação da funcionalidade"
+git push</code></pre>
+            <p>O Pull Request existente será atualizado automaticamente.</p>
+
+            <hr class="my-4">
+
+            <h3 class="h5">⚠️ Situação 9 — Apareceu um conflito no Git</h3>
+            <p>
+                Primeiro descubra quais arquivos estão envolvidos:
+            </p>
+            <pre class="bg-dark text-light rounded p-3"><code>git status</code></pre>
+            <p>
+                Se houver conflito, abra os arquivos indicados no VS Code e
+                analise as versões apresentadas. Se não entender o conflito,
+                pare e peça orientação ao professor antes de continuar.
+            </p>
+
+            <h3 class="h5 mt-4">📋 Tabela rápida — “apareceu isso, faça aquilo”</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Situação</th>
+                            <th>Primeiro comando/procedimento</th>
+                            <th>Objetivo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Port 5000 is in use</td>
+                            <td><code>lsof -i :5000</code></td>
+                            <td>Descobrir o processo que ocupa a porta.</td>
+                        </tr>
+                        <tr>
+                            <td>Não sei minha branch</td>
+                            <td><code>git branch</code></td>
+                            <td>Identificar a branch ativa.</td>
+                        </tr>
+                        <tr>
+                            <td>Develop desatualizada</td>
+                            <td><code>git pull origin develop</code></td>
+                            <td>Atualizar a cópia local.</td>
+                        </tr>
+                        <tr>
+                            <td>Não sei o que alterei</td>
+                            <td><code>git status</code> + <code>git diff</code></td>
+                            <td>Revisar as alterações.</td>
+                        </tr>
+                        <tr>
+                            <td>Commit não aparece no GitHub</td>
+                            <td><code>git push</code></td>
+                            <td>Publicar os commits.</td>
+                        </tr>
+                        <tr>
+                            <td>403 / permission denied</td>
+                            <td>Parar e chamar o professor</td>
+                            <td>Verificar permissões.</td>
+                        </tr>
+                        <tr>
+                            <td>PR com destino errado</td>
+                            <td>Conferir base/compare</td>
+                            <td>Garantir <code>feature → develop</code>.</td>
+                        </tr>
+                        <tr>
+                            <td>PR pediu correção</td>
+                            <td>Corrigir na mesma branch e <code>git push</code></td>
+                            <td>Atualizar o PR existente.</td>
+                        </tr>
+                        <tr>
+                            <td>Conflito de merge</td>
+                            <td><code>git status</code></td>
+                            <td>Identificar os arquivos em conflito.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-success mb-0">
+                <strong>Aprendizado importante:</strong>
+                erros fazem parte do desenvolvimento. O profissional aprende a
+                interpretar a mensagem, investigar a causa e aplicar o procedimento adequado.
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- =========================================================
+         FINALIZAÇÃO DO EXERCÍCIO
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4 border-primary">
+
+        <div class="card-header fw-semibold text-primary">
+            🏁 O exercício terminou. E agora?
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <strong>Terminar a funcionalidade não significa terminar a atividade.</strong>
+                Depois de desenvolver e testar, o grupo precisa preparar o trabalho para
+                ser entregue, revisado e integrado ao projeto.
+            </p>
+
+            <div class="border rounded bg-light p-3 mb-4 text-center">
+                <svg viewBox="0 0 1100 260" class="img-fluid" role="img"
+                     aria-label="Fluxo de finalização da funcionalidade">
+                    <rect x="30" y="70" width="180" height="75" rx="14"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="3"/>
+                    <text x="120" y="103" text-anchor="middle" font-size="18" font-weight="bold">Desenvolver</text>
+                    <text x="120" y="127" text-anchor="middle" font-size="14">funcionalidade</text>
+
+                    <line x1="210" y1="107" x2="305" y2="107" stroke="#6c757d" stroke-width="5"/>
+                    <polygon points="305,107 283,94 283,120" fill="#6c757d"/>
+
+                    <rect x="305" y="70" width="180" height="75" rx="14"
+                          fill="#d1e7dd" stroke="#198754" stroke-width="3"/>
+                    <text x="395" y="103" text-anchor="middle" font-size="18" font-weight="bold">Testar</text>
+                    <text x="395" y="127" text-anchor="middle" font-size="14">navegador + pytest</text>
+
+                    <line x1="485" y1="107" x2="580" y2="107" stroke="#6c757d" stroke-width="5"/>
+                    <polygon points="580,107 558,94 558,120" fill="#6c757d"/>
+
+                    <rect x="580" y="70" width="180" height="75" rx="14"
+                          fill="#fff3cd" stroke="#856404" stroke-width="3"/>
+                    <text x="670" y="103" text-anchor="middle" font-size="18" font-weight="bold">Commit</text>
+                    <text x="670" y="127" text-anchor="middle" font-size="14">registrar versão</text>
+
+                    <line x1="760" y1="107" x2="855" y2="107" stroke="#6c757d" stroke-width="5"/>
+                    <polygon points="855,107 833,94 833,120" fill="#6c757d"/>
+
+                    <rect x="855" y="70" width="180" height="75" rx="14"
+                          fill="#e2e3e5" stroke="#495057" stroke-width="3"/>
+                    <text x="945" y="103" text-anchor="middle" font-size="18" font-weight="bold">Push</text>
+                    <text x="945" y="127" text-anchor="middle" font-size="14">enviar ao GitHub</text>
+
+                    <text x="550" y="200" text-anchor="middle" font-size="18" font-weight="bold" fill="#245b9e">
+                        Push → Pull Request → revisão → correção (se necessário) → integração em develop
+                    </text>
+                </svg>
+            </div>
+
+            <h3 class="h5">1. Faça a última rodada de testes</h3>
+
+            <p>
+                Antes de entregar, execute a aplicação e teste a funcionalidade no navegador.
+                Se o projeto possuir testes automatizados, execute-os também.
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>python3 app.py</code></pre>
+
+            <p>Em outro terminal, se necessário:</p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>python3 -m pytest</code></pre>
+
+            <div class="alert alert-success">
+                <strong>Resultado esperado:</strong> a funcionalidade deve funcionar no navegador
+                e os testes automatizados devem passar antes da entrega.
+            </div>
+
+            <h3 class="h5 mt-4">2. Confira exatamente o que será entregue</h3>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git status
+git diff</code></pre>
+
+            <p>
+                O <code>git status</code> mostra os arquivos modificados.
+                O <code>git diff</code> permite revisar o conteúdo alterado.
+            </p>
+
+            <div class="alert alert-warning">
+                <strong>Antes do commit:</strong>
+                verifique se você não alterou arquivos que não fazem parte do seu desafio.
+            </div>
+
+            <h3 class="h5 mt-4">3. Registre a funcionalidade com commit</h3>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git add .
+git commit -m "Implementa manutenção de veículos"</code></pre>
+
+            <p>
+                Substitua a mensagem pelo nome da funcionalidade desenvolvida pelo seu grupo.
+            </p>
+
+            <h3 class="h5 mt-4">4. Envie a branch para o GitHub</h3>
+
+            <p>
+                Se for o primeiro envio dessa branch:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git push -u origin feature/manutencao-veiculos</code></pre>
+
+            <p>
+                Depois que a branch já estiver vinculada ao GitHub, os próximos envios podem utilizar:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git push</code></pre>
+
+            <div class="alert alert-info">
+                <strong>Atenção:</strong>
+                substitua <code>feature/manutencao-veiculos</code> pelo nome da branch do seu grupo.
+            </div>
+
+            <h3 class="h5 mt-4">5. Crie o Pull Request</h3>
+
+            <p>
+                Depois do <code>push</code>, abra o repositório no GitHub e crie um Pull Request.
+                Confira cuidadosamente:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>base: develop
+compare: feature/manutencao-veiculos</code></pre>
+
+            <p>
+                O título deve identificar claramente a funcionalidade. Exemplo:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>Implementa manutenção de veículos</code></pre>
+
+            <p>Na descrição do Pull Request, informe pelo menos:</p>
+
+            <ul>
+                <li>qual funcionalidade foi desenvolvida;</li>
+                <li>quais arquivos principais foram alterados;</li>
+                <li>como a funcionalidade foi testada;</li>
+                <li>se existe alguma limitação ou ponto que precisa de atenção.</li>
+            </ul>
+
+            <h3 class="h5 mt-4">6. Depois de abrir o Pull Request, o trabalho ainda não acabou</h3>
+
+            <p>
+                O professor ou responsável pela integração poderá revisar o código e solicitar alterações.
+                Se isso acontecer, <strong>continue trabalhando na mesma branch</strong>.
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code># corrigir o código
+
+git status
+git diff
+git add .
+git commit -m "Corrige validação da funcionalidade"
+git push</code></pre>
+
+            <p>
+                O Pull Request existente será atualizado automaticamente. Não é necessário criar outro PR
+                para cada correção.
+            </p>
+
+            <h3 class="h5 mt-4">7. Quando o Pull Request for aprovado</h3>
+
+            <p>
+                Após a revisão e aprovação, a funcionalidade poderá ser integrada à <code>develop</code>.
+                O grupo deve aguardar a integração antes de considerar a entrega concluída.
+            </p>
+
+            <div class="border rounded p-3 bg-light">
+                <strong>Fluxo de entrega:</strong>
+                <div class="mt-2">
+                    <code>feature/grupo</code>
+                    → <code>git push</code>
+                    → <strong>Pull Request</strong>
+                    → <strong>revisão</strong>
+                    → <strong>correções</strong>, se necessárias
+                    → <strong>merge em develop</strong>
+                </div>
+            </div>
+
+            <h3 class="h5 mt-4">8. Após a integração: atualizar sua cópia local</h3>
+
+            <p>
+                Depois que a funcionalidade estiver integrada, volte para a <code>develop</code>
+                e atualize sua cópia local:
+            </p>
+
+            <pre class="bg-dark text-light rounded p-3"><code>git checkout develop
+git pull origin develop</code></pre>
+
+            <p>
+                Isso garante que seu ambiente local contenha a versão integrada mais recente do projeto.
+            </p>
+
+            <h3 class="h5 mt-4">🎓 O que será considerado como entrega do grupo?</h3>
+
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <div class="border rounded p-3 h-100">
+                        ☑️ Funcionalidade implementada
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 h-100">
+                        ☑️ Aplicação testada no navegador
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 h-100">
+                        ☑️ Testes automatizados executados
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 h-100">
+                        ☑️ Alterações revisadas com <code>git status</code> e <code>git diff</code>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 h-100">
+                        ☑️ Commit realizado
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 h-100">
+                        ☑️ Branch enviada ao GitHub
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 h-100">
+                        ☑️ Pull Request aberto para <code>develop</code>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 h-100">
+                        ☑️ Revisão e integração concluídas
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-dark mt-4 mb-0">
+                <strong>Importante:</strong>
+                para esta atividade, “terminei meu código” e “entreguei minha funcionalidade”
+                são coisas diferentes. A entrega acontece quando o trabalho passa pelo fluxo
+                de <strong>teste → commit → push → Pull Request → revisão → integração</strong>.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         CHECKLIST
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header fw-semibold">
+            ✅ Checklist antes de abrir o Pull Request
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-2">
+
+                {% for item in [
+                    "Estou na minha branch feature/...",
+                    "Minha branch foi criada a partir da develop atualizada",
+                    "A funcionalidade está funcionando no navegador",
+                    "Os formulários e validações foram testados",
+                    "Não alterei arquivos sem relação com meu desafio",
+                    "Executei git status e revisei os arquivos",
+                    "Executei git diff e revisei as alterações",
+                    "Fiz pelo menos um commit com mensagem clara",
+                    "Minha branch foi enviada para o GitHub",
+                    "O Pull Request tem como destino a develop",
+                    "Expliquei no Pull Request o que foi desenvolvido",
+                    "Testei novamente depois das últimas alterações"
+                ] %}
+
+                    <div class="col-md-6">
+
+                        <div class="border rounded p-2">
+                            ☑️ {{ item }}
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         REGRAS DE OURO
+         ========================================================= -->
+
+    <div class="card shadow-sm mb-4 border-success">
+
+        <div class="card-header fw-semibold text-success">
+            ⭐ Regras de ouro da prática
+        </div>
+
+        <div class="card-body">
+
+            <ol class="mb-0">
+
+                <li class="mb-2">
+                    <strong>Não desenvolva diretamente na main.</strong>
+                </li>
+
+                <li class="mb-2">
+                    <strong>Comece sempre pela develop atualizada.</strong>
+                </li>
+
+                <li class="mb-2">
+                    <strong>Cada grupo trabalha em sua própria branch.</strong>
+                </li>
+
+                <li class="mb-2">
+                    <strong>Teste antes de fazer commit.</strong>
+                </li>
+
+                <li class="mb-2">
+                    <strong>Confira o git status antes do git add.</strong>
+                </li>
+
+                <li class="mb-2">
+                    <strong>Use mensagens de commit que expliquem a alteração.</strong>
+                </li>
+
+                <li class="mb-2">
+                    <strong>O Pull Request deve apontar para develop.</strong>
+                </li>
+
+                <li class="mb-2">
+                    <strong>Correções solicitadas na revisão devem ser feitas na mesma branch.</strong>
+                </li>
+
+                <li class="mb-2">
+                    <strong>A integração em develop acontece somente depois da revisão.</strong>
+                </li>
+
+                <li>
+                    <strong>A main representa a versão principal do produto.</strong>
+                </li>
+
+            </ol>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         FINAL
+         ========================================================= -->
+
+    <div class="alert alert-dark shadow-sm">
+
+        <h2 class="h5">
+            🚀 O que você está aprendendo aqui?
+        </h2>
+
+        <p class="mb-2">
+            Mais do que criar uma tela ou escrever código Python, você está
+            experimentando um fluxo real de desenvolvimento colaborativo:
+            organização do trabalho, isolamento de funcionalidades, controle de
+            versões, testes, revisão de código e integração.
+        </p>
+
+        <p class="mb-0">
+            <strong>O objetivo da prática é aprender a entregar software em equipe.</strong>
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
