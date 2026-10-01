@@ -1,1 +1,48 @@
-{% extends 'base.html' %}{% block content %}<h1 class="h3">Relatórios Operacionais</h1><p class="text-secondary">Exemplo de relatório derivado das tabelas operacionais.</p><div class="card shadow-sm"><div class="card-header fw-semibold">Desempenho por motorista</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Motorista</th><th>Entregas</th><th>Concluídas</th><th>Taxa de sucesso</th></tr></thead><tbody>{% for m in motoristas %}<tr><td>{{m.nome}}</td><td>{{m.total}}</td><td>{{m.entregues}}</td><td><span class="badge text-bg-{{'success' if m.taxa>=90 else 'warning'}}">{{m.taxa}}%</span></td></tr>{% endfor %}</tbody></table></div></div>{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="h3">Relatórios Operacionais</h1>
+<p class="text-secondary">Indicadores operacionais por motorista, calculados a partir das entregas cadastradas.</p>
+
+<div class="card shadow-sm">
+  <div class="card-header fw-semibold">Desempenho por motorista</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Motorista</th>
+          <th class="text-end">Atribuídas</th>
+          <th class="text-end">Concluídas</th>
+          <th class="text-end">Atrasadas</th>
+          <th class="text-end">% Conclusão</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in motoristas %}
+        <tr>
+          <td>{{ m.nome }}</td>
+          <td class="text-end">{{ m.atribuidas }}</td>
+          <td class="text-end">{{ m.concluidas }}</td>
+          <td class="text-end">
+            {% if m.atrasadas > 0 %}
+              <span class="badge text-bg-danger">{{ m.atrasadas }}</span>
+            {% else %}
+              {{ m.atrasadas }}
+            {% endif %}
+          </td>
+          <td class="text-end">
+            <span class="badge text-bg-{{ 'success' if m.percentual >= 90 else 'warning' }}">
+              {{ m.percentual }}%
+            </span>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center text-secondary">Nenhum motorista cadastrado.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

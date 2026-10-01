@@ -450,7 +450,38 @@ def list_entity(entity):
     return render_template("list.html", entity=entity, title=title, records=records, model=model)
 
 
+def montar_timeline(entrega):
+    eventos = []
+    pedido = entrega.pedido
 
+    if pedido and pedido.data_pedido:
+        eventos.append({"ordem": 0, "tipo": "Pedido",
+                        "data": pedido.data_pedido,
+                        "status": pedido.status,
+                        "descricao": f"Pedido {pedido.numero}"})
+
+    # Saída: não existe campo em nenhum modelo, então não é exibida
+
+    for oc in entrega.ocorrencias:
+        eventos.append({"ordem": 2, "tipo": "Ocorrência",
+                        "data": oc.data, "status": oc.status,
+                        "descricao": f"{oc.tipo}: {oc.descricao}"})
+
+    if entrega.status == "ENTREGUE" and entrega.data_entrega:
+        eventos.append({"ordem": 3, "tipo": "Conclusão",
+                        "data": entrega.data_entrega,
+                        "status": entrega.status,
+                        "descricao": "Entrega concluída"})
+
+    return sorted(eventos, key=lambda e: (e["data"], e["ordem"]))
+
+
+@app.route("/entregas/<int:id>/timeline")
+def entrega_timeline(id):
+    entrega = Entrega.query.get_or_404(id)
+    return render_template("timeline.html", title="Timeline",
+                           entrega=entrega,
+                           eventos=montar_timeline(entrega))
 # =========================================================
 # CRUD COMPLETO DE CLIENTES
 # =========================================================
@@ -776,16 +807,49 @@ def build_entity_from_form(entity, model, record=None):
         return Ocorrencia(entrega_id=int(data["entrega_id"]), tipo=data["tipo"], descricao=data["descricao"], data=date.fromisoformat(data["data"]), status=data["status"])
     raise ValueError("Entidade não suportada")
 
+#alterações para exercício 8 iniciam aqui
+def indicadores_por_motorista():
+    """
+    Calcula indicadores operacionais de cada motorista:
+    - atribuídas: total de entregas do motorista
+    - concluídas: entregas com status ENTREGUE
+    - atrasadas: não entregues e com data prevista anterior a hoje
+    - percentual de conclusão: concluídas / atribuídas * 100
+    """
+    hoje = date.today()
+    indicadores = []
+
+    for motorista in Motorista.query.order_by(Motorista.nome).all():
+        entregas = motorista.entregas  # relationship definida no model
+
+        atribuidas = len(entregas)
+        concluidas = sum(1 for e in entregas if e.status == "ENTREGUE")
+        atrasadas = sum(
+            1 for e in entregas
+            if e.status != "ENTREGUE" and e.data_prevista < hoje
+        )
+
+        # Evita divisão por zero para motorista sem entregas
+        percentual = round(concluidas / atribuidas * 100, 1) if atribuidas else 0.0
+
+        indicadores.append({
+            "id": motorista.id,
+            "nome": motorista.nome,
+            "ativo": motorista.ativo,
+            "atribuidas": atribuidas,
+            "concluidas": concluidas,
+            "atrasadas": atrasadas,
+            "percentual": percentual,
+        })
+
+    return indicadores
 
 @app.route("/relatorios")
 def reports():
-    motoristas = []
-    for m in Motorista.query.all():
-        entregas = Entrega.query.filter_by(motorista_id=m.id).all()
-        total = len(entregas)
-        ok = sum(1 for e in entregas if e.status == "ENTREGUE")
-        motoristas.append({"nome": m.nome, "total": total, "entregues": ok, "taxa": round(ok/total*100,1) if total else 0})
+    motoristas = indicadores_por_motorista()
     return render_template("reports.html", motoristas=motoristas)
+
+#alterações para exercício 8 terminam aqui
 
 
 # =========================================================
