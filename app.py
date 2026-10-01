@@ -127,6 +127,17 @@ class Ocorrencia(db.Model):
     entrega = db.relationship("Entrega", backref=db.backref("ocorrencias", lazy=True))
 
 
+class Manutencao(db.model):
+    id = db.column(db.integer, primary_key=True)
+    veiculo_id = db.Column(db.Integer, db.ForeignKey("veiculo.id"), nullable=False)
+    data_manutencao = db.Column(db.Date, nullable=False)
+    quilometragem = db.Column(db.Integer, nullable=False)
+    descricao_manutencao = db.Column(db.String(255), nullable=False)
+    custo_manutencao = db.Column(db.Integer, nullabre=False)
+    status_manutencao = db.Column(db.String(30), nullable=False)
+    veiculo = db.relationship("Veiculo", backref="Manutencoes", lazy=True)
+
+
 MODEL_MAP = {
     "clientes": (Cliente, "Clientes"),
     "motoristas": (Motorista, "Motoristas"),
@@ -138,6 +149,7 @@ MODEL_MAP = {
     "rotas": (Rota, "Rotas"),
     "entregas": (Entrega, "Entregas"),
     "ocorrencias": (Ocorrencia, "Ocorrências"),
+    "manutencoes": (Manutencao, "Manutenções"),
 }
 
 
