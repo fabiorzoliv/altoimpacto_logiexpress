@@ -1,2 +1,56 @@
-{% extends 'base.html' %}{% block content %}<div class="d-flex justify-content-between align-items-center mb-3"><div><h1 class="h3">{{title}}</h1><p class="text-secondary">Registros cadastrados na LOGIEXPRESS.</p></div><a href="{{url_for('new_entity',entity=entity)}}" class="btn btn-primary">+ Novo registro</a></div>
-<div class="card shadow-sm"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Informações</th><th>Status</th></tr></thead><tbody>{% for r in records %}<tr><td>{{r.id}}</td><td><strong>{{r.nome or r.descricao or r.numero or r.placa or r.codigo or r.razao_social or (r.origem ~ ' → ' ~ r.destino)}}</strong><br><span class="small text-secondary">{{r.cidade if r.cidade else ''}} {{r.uf if r.uf else ''}}</span></td><td>{% if r.ativo is defined %}<span class="badge text-bg-{{'success' if r.ativo else 'secondary'}}">{{'Ativo' if r.ativo else 'Inativo'}}</span>{% elif r.status is defined %}<span class="badge text-bg-primary">{{r.status}}</span>{% else %}—{% endif %}</td></tr>{% else %}<tr><td colspan="3" class="text-center py-4">Nenhum registro.</td></tr>{% endfor %}</tbody></table></div></div>{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h3">{{ title }}</h1>
+    <p class="text-secondary">Registros cadastrados na LOGIEXPRESS.</p>
+  </div>
+  {% if entity != 'entregas' %}
+  <a href="{{ url_for('new_entity', entity=entity) }}" class="btn btn-primary">+ Novo registro</a>
+  {% endif %}
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Informações</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ r.id }}</td>
+          <td>
+            {% if entity == 'entregas' %}
+              <strong>Entrega #{{ r.id }}</strong><br>
+              <span class="small text-secondary">Pedido {{ r.pedido.numero }}</span>
+            {% else %}
+              <strong>{{ r.uf if r.uf else '' }}</span>
+{% endif %}
+</td>
+<td>
+{% if r.ativo is defined %}
+<span class="badge text-bg-{{ 'success' if r.ativo else 'secondary' }}">{{ 'Ativo' if r.ativo else 'Inativo' }}</span>
+{% elif r.status is defined %}
+<span class="badge text-bg-primary">{{ r.status }}</span>
+{% else %}-{% endif %}
+</td>
+<td class="text-end">
+{% if entity == 'entregas' %}
+<a href="{{ url_for('entrega_timeline', id=r.id) }}" class="btn btn-sm btn-outline-primary">Timeline</a>
+{% endif %}
+</td>
+</tr>
+{% else %}
+<tr><td colspan="4" class="text-center py-4">Nenhum registro.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+{% endblock %}
