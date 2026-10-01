@@ -432,6 +432,38 @@ def dashboard():
         grafico_motorista_valores=grafico_motorista_valores
     )
 
+def montar_timeline(entrega):
+    eventos = []
+    pedido = entrega.pedido
+
+    if pedido and pedido.data_pedido:
+        eventos.append({"ordem": 0, "tipo": "Pedido",
+                        "data": pedido.data_pedido,
+                        "status": pedido.status,
+                        "descricao": f"Pedido {pedido.numero}"})
+
+    # Saída: não existe campo em nenhum modelo, então não é exibida
+
+    for oc in entrega.ocorrencias:
+        eventos.append({"ordem": 2, "tipo": "Ocorrência",
+                        "data": oc.data, "status": oc.status,
+                        "descricao": f"{oc.tipo}: {oc.descricao}"})
+
+    if entrega.status == "ENTREGUE" and entrega.data_entrega:
+        eventos.append({"ordem": 3, "tipo": "Conclusão",
+                        "data": entrega.data_entrega,
+                        "status": entrega.status,
+                        "descricao": "Entrega concluída"})
+
+    return sorted(eventos, key=lambda e: (e["data"], e["ordem"]))
+
+@app.route("/entregas/<int:id>/timeline")
+def entrega_timeline(id):
+    entrega = Entrega.query.get_or_404(id)
+    return render_template("timeline.html", title="Timeline",
+                           entrega=entrega,
+                           eventos=montar_timeline(entrega))
+
 @app.route("/cadastros/<entity>")
 def list_entity(entity):
     """
@@ -448,8 +480,6 @@ def list_entity(entity):
     model, title = MODEL_MAP[entity]
     records = model.query.order_by(model.id.desc()).all()
     return render_template("list.html", entity=entity, title=title, records=records, model=model)
-
-
 
 # =========================================================
 # CRUD COMPLETO DE CLIENTES
