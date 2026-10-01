@@ -126,6 +126,16 @@ class Ocorrencia(db.Model):
     status = db.Column(db.String(30), default="ABERTA")
     entrega = db.relationship("Entrega", backref=db.backref("ocorrencias", lazy=True))
 
+class Combustivel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    veiculo_id = db.Column(db.Integer, db.ForeignKey("veiculo.id"), nullable=False)
+    data_abastecimento = db.Column(db.Date, nullable=False)
+    litros = db.Column(db.Float, nullable=False)
+    valor_total = db.Column(db.Float, nullable=False)
+    valor_litro = db.Column(db.Float, nullable=False)
+    quilometragem = db.Column(db.Float, nullable=False)
+    posto = db.Column(db.String(255), nullable=False)
+    veiculo = db.relationship("Veiculo", backref=db.backref("abastecimentos", lazy=True))
 
 MODEL_MAP = {
     "clientes": (Cliente, "Clientes"),
@@ -138,6 +148,7 @@ MODEL_MAP = {
     "rotas": (Rota, "Rotas"),
     "entregas": (Entrega, "Entregas"),
     "ocorrencias": (Ocorrencia, "Ocorrências"),
+    "combustivel": (Combustivel, "Combustivel"),
 }
 
 
@@ -185,7 +196,7 @@ def seed_data():
         Rota(origem="São Paulo", destino="Sorocaba", distancia_km=105, tempo_estimado_h=2.0),
         Rota(origem="Campinas", destino="Guarulhos", distancia_km=120, tempo_estimado_h=2.2),
     ]
-    db.session.add_all(clientes + motoristas + veiculos + produtos + centros + transportadoras + rotas)
+    db.session.add_all(clientes + motoristas + veiculos + produtos + centros + transportadoras + rotas + combustivel)
     db.session.flush()
     hoje = date.today()
     for i in range(1, 21):
@@ -722,6 +733,104 @@ def clientes_excluir(cliente_id):
         )
 
     return redirect(url_for("clientes_list"))
+
+    #------------------------------------------------------
+    # CRUD COMBUSTIVEL/ABASTECIMENTO
+    # -----------------------------------------------------
+
+@app.route("/cadastros/abastecimentos")
+def combustivel_list():
+    combustivel = Combustivel.query.order_by(Combustivel.id.desc()).all()
+
+    return render_template(
+        "abastecimentos/list.html",
+        combustivel = combustivel
+    )
+
+@app.route("/abastecimentos/novo", methods=["GET", "POST"])
+def combustivel_novo():
+   
+    if request.method == "POST":
+        data = request.form.get("data")
+        litros = request.form.get("litros")
+        valor_total = request.form.get("valor total")
+        quilometragem = request.form.get("quilometragem")
+        posto = request.form.get("posto")
+
+
+        # -------------------------------------------------
+        # Validações básicas
+        # -------------------------------------------------
+
+        if not nome or not documento or not cidade or not uf:
+            flash(
+                "Preencha todos os campos obrigatórios.",
+                "warning"
+            )
+            return render_template(
+                "clientes/form.html",
+                cliente=None
+            )
+
+        if len(uf) != 2 or not uf.isalpha():
+            flash(
+                "A UF deve possuir exatamente 2 letras.",
+                "warning"
+            )
+            return render_template(
+                "clientes/form.html",
+                cliente=None
+            )
+
+        # -------------------------------------------------
+        # Verifica se o documento já está cadastrado
+        # -------------------------------------------------
+
+        cliente_existente = Cliente.query.filter_by(
+            documento=documento
+        ).first()
+
+        if cliente_existente:
+            flash(
+                "Já existe um cliente cadastrado com este documento.",
+                "danger"
+            )
+            return render_template(
+                "clientes/form.html",
+                cliente=None
+            )
+
+        try:
+            cliente = Cliente(
+                nome=nome,
+                documento=documento,
+                cidade=cidade,
+                uf=uf,
+                ativo=ativo
+            )
+
+            db.session.add(cliente)
+            db.session.commit()
+
+            flash(
+                "Cliente cadastrado com sucesso.",
+                "success"
+            )
+
+            return redirect(url_for("clientes_list"))
+
+        except Exception as exc:
+            db.session.rollback()
+
+            flash(
+                f"Não foi possível cadastrar o cliente: {exc}",
+                "danger"
+            )
+
+    return render_template(
+        "clientes/form.html",
+        cliente=None
+    )
 
 
 @app.route("/cadastros/<entity>/novo", methods=["GET", "POST"])
