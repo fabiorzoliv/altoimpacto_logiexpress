@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Controle de SLA de Entregas</h2>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Voltar ao Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Pedido</th>
+                            <th>Motorista</th>
+                            <th>Data Prevista</th>
+                            <th>Data Entrega</th>
+                            <th>Status Operacional</th>
+                            <th>Situação SLA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in entregas %}
+                        <tr>
+                            <td><strong>{{ item.entrega.pedido.numero }}</strong></td>
+                            <td>{{ item.entrega.motorista.nome }}</td>
+                            <td>{{ item.entrega.data_prevista.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                {% if item.entrega.data_entrega %}
+                                    {{ item.entrega.data_entrega.strftime('%d/%m/%Y') }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ item.entrega.status }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ item.classe_css }}">
+                                    {{ item.situacao }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
