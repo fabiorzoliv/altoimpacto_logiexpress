@@ -6,7 +6,7 @@
 <p class="text-secondary">Quadro de acompanhamento do backlog e das atividades dos grupos.</p>
 <div class="alert alert-primary"><strong>Sugestão:</strong> usar o GitHub Projects como quadro Kanban, pois ele fica associado ao mesmo repositório. Também é possível usar Trello ou uma lousa física/digital, desde que o status das tarefas seja atualizado.</div>
 <div class="row g-3">
-{% for title, color, desc in [('Backlog','secondary','Ideias e requisitos ainda não iniciados.'),('Ready','info','Tarefas escolhidas e prontas para um grupo iniciar.'),('Em desenvolvimento','primary','Grupo trabalhando na branch da funcionalidade.'),('Code Review','warning','Pull Request aberto aguardando revisão.'),('Teste integrado','dark','Código já integrado em develop e sendo validado.'),('Done','success','Funcionalidade validada e concluída.')] %}
+{% for title, color, desc in [('Backlog','secondary','Ideias e requisitos ainda não iniciados.'),('Ready','info','Tarefas escolhidas e prontas para um grupo iniciar.'),('Em desenvolvimento','primary','Grupo trabalhando na branch da funcionalidade.'),('Code Review','warning','Pull Request aberto aguardando revisão.'),('Teste integrado','dark','Código já integrado em develop e sendo validado.'),('Impedimento','danger','Tarefa bloqueada por um problema que impede o avanço.'),('Done','success','Funcionalidade validada e concluída.')] %}
 <div class="col-md-4 col-xl-2"><div class="card h-100 border-{{ color }}"><div class="card-header bg-{{ color }} {% if color in ['warning','info'] %}text-dark{% else %}text-white{% endif %}"><strong>{{ title }}</strong></div><div class="card-body small">{{ desc }}</div></div></div>
 {% endfor %}
 </div>
@@ -18,6 +18,30 @@ Status: Em desenvolvimento
 Critérios de aceite: ...
 Pull Request: #...
 </pre></div></div>
-<div class="card mt-4"><div class="card-body"><h2 class="h4">Regra de sincronização</h2><ol><li>O cartão muda para <strong>Em desenvolvimento</strong> quando a branch é criada.</li><li>Vai para <strong>Code Review</strong> quando o Pull Request é aberto.</li><li>Vai para <strong>Teste integrado</strong> após o merge em <code>develop</code>.</li><li>Vai para <strong>Done</strong> somente após validação.</li></ol></div></div>
+<div class="card mt-4">
+<div class="card-body">
+<h2 class="h4">Regra de sincronização</h2>
+<ol>
+<li>O cartão muda para <strong>Em desenvolvimento</strong> quando a branch é criada e o grupo inicia o trabalho.</li>
+<li>Vai para <strong>Code Review</strong> quando o Pull Request é aberto.</li>
+<li>Vai para <strong>Teste integrado</strong> após o merge em <code>develop</code>.</li>
+<li>Se surgir um bloqueio que impeça o avanço, o cartão pode ir para <strong>Impedimento</strong>.</li>
+<li>Quando o impedimento for resolvido, a tarefa retorna para a etapa em que deve continuar.</li>
+<li>Vai para <strong>Done</strong> somente após a funcionalidade ser validada.</li>
+</ol>
+
+<div class="alert alert-danger mt-3 mb-0">
+<strong>🚧 O que é um impedimento?</strong>
+<p class="mb-2">
+É uma situação que impede o grupo de continuar sozinho. Exemplos:
+conflito de Git que não foi resolvido, problema de permissão no GitHub,
+erro no Codespace, dependência de outra funcionalidade ou dúvida sobre o requisito.
+</p>
+<p class="mb-0">
+<strong>Importante:</strong> Impedimento não significa tarefa concluída.
+Quando o bloqueio for resolvido, o cartão deve voltar para a etapa adequada do fluxo.
+</p>
+</div>
+</div>
 </div>
 {% endblock %}
