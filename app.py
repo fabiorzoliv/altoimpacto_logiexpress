@@ -788,6 +788,8 @@ def build_entity_from_form(entity, model, record=None):
         return Entrega(pedido_id=int(data["pedido_id"]), motorista_id=int(data["motorista_id"]), veiculo_id=int(data["veiculo_id"]), rota_id=int(data["rota_id"]) if data.get("rota_id") else None, data_prevista=date.fromisoformat(data["data_prevista"]), data_entrega=date.fromisoformat(data["data_entrega"]) if data.get("data_entrega") else None, status=data["status"])
     if entity == "ocorrencias":
         return Ocorrencia(entrega_id=int(data["entrega_id"]), tipo=data["tipo"], descricao=data["descricao"], data=date.fromisoformat(data["data"]), status=data["status"])
+    if entity == "manutecoes":
+        return Manutencao(veiculo_id=int(data["veiculo_id"]), data_manutencao=date.fromisoformat(data["data_manutencao"]), quilometragem=int(data["quilometragem"]), descricao_manutencao=data["descricao_manutencao"], custo_manutencao=Decimal(data["custo_manutencao"]), status_manutencao=data["status_manutencao"])
     raise ValueError("Entidade não suportada")
 
 
@@ -928,9 +930,55 @@ def instrucoes():
     """
 
     return render_template("instrucoes.html")
+
+# =========================================================
+# CONTROLE DE SLA DE ENTREGAS
+# =========================================================
+
+@app.route("/sla")
+def controle_sla():
+    hoje = date.today()
+    todas_entregas = Entrega.query.order_by(Entrega.data_prevista.asc()).all()
+
+    relatorio_sla = []
+
+    for entrega in todas_entregas:
+        # 1. Se já foi entregue
+        if entrega.status == "ENTREGUE":
+            if entrega.data_entrega and entrega.data_entrega > entrega.data_prevista:
+                situacao = "Entregue com Atraso"
+                classe_css = "warning"
+            else:
+                situacao = "Entregue no Prazo"
+                classe_css = "success"
+
+        # 2. Se ainda não foi entregue (em trânsito ou pendente)
+        else:
+            if entrega.data_prevista < hoje:
+                dias_atraso = (hoje - entrega.data_prevista).days
+                if dias_atraso > 2:
+                    situacao = f"Crítico ({dias_atraso} dias de atraso)"
+                    classe_css = "danger"
+                else:
+                    situacao = f"Atrasado ({dias_atraso} dia(s))"
+                    classe_css = "warning"
+            else:
+                situacao = "No Prazo"
+                classe_css = "info"
+
+        relatorio_sla.append({
+            "entrega": entrega,
+            "situacao": situacao,
+            "classe_css": classe_css
+        })
+
+    return render_template("sla.html", entregas=relatorio_sla)
+
+
 # =========================================================
 # DOCUMENTAÇÃO E ATIVIDADES
 # =========================================================
+
 
 @app.route("/documentacao")
 def documentacao():
