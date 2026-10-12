@@ -814,7 +814,7 @@ def reports():
 @app.route("/manutencoes")
 def manutencoes_list():
     """
-    Lista as manutenções, da mais recente para a mais antiga.
+    Lista as manutenções, da mais recente para a mais antiga. Vai manter.
     """
     manutencoes = Manutencao.query.order_by(Manutencao.data_manutencao.desc()).all()
 
