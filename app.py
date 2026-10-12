@@ -127,6 +127,19 @@ class Ocorrencia(db.Model):
     entrega = db.relationship("Entrega", backref=db.backref("ocorrencias", lazy=True))
 
 
+#começo do trabalho -- LINCONLAGEM
+class Manutencao(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    veiculo_id = db.Column(db.Integer, db.ForeignKey("veiculo.id"), nullable=False)
+    data_manutencao = db.Column(db.Date, nullable=False)
+    tipo_manutencao = db.Column(db.String(50), nullable=False)
+    quilometragem = db.Column(db.Integer, nullable=False)
+    descricao_manutencao = db.Column(db.String(255), nullable=False)
+    custo_manutencao = db.Column(db.Numeric(10, 2), nullable=False)
+    status_manutencao = db.Column(db.String(30), nullable=False)
+    veiculo = db.relationship("Veiculo", backref="Manutencoes", lazy=True)
+
+
 MODEL_MAP = {
     "clientes": (Cliente, "Clientes"),
     "motoristas": (Motorista, "Motoristas"),
@@ -138,6 +151,7 @@ MODEL_MAP = {
     "rotas": (Rota, "Rotas"),
     "entregas": (Entrega, "Entregas"),
     "ocorrencias": (Ocorrencia, "Ocorrências"),
+    "manutencoes": (Manutencao, "Manutenções"),
 }
 
 
@@ -774,6 +788,8 @@ def build_entity_from_form(entity, model, record=None):
         return Entrega(pedido_id=int(data["pedido_id"]), motorista_id=int(data["motorista_id"]), veiculo_id=int(data["veiculo_id"]), rota_id=int(data["rota_id"]) if data.get("rota_id") else None, data_prevista=date.fromisoformat(data["data_prevista"]), data_entrega=date.fromisoformat(data["data_entrega"]) if data.get("data_entrega") else None, status=data["status"])
     if entity == "ocorrencias":
         return Ocorrencia(entrega_id=int(data["entrega_id"]), tipo=data["tipo"], descricao=data["descricao"], data=date.fromisoformat(data["data"]), status=data["status"])
+    if entity == "manutecoes":
+        return Manutencao(veiculo_id=int(data["veiculo_id"]), data_manutencao=date.fromisoformat(data["data_manutencao"]), quilometragem=int(data["quilometragem"]), descricao_manutencao=data["descricao_manutencao"], custo_manutencao=Decimal(data["custo_manutencao"]), status_manutencao=data["status_manutencao"])
     raise ValueError("Entidade não suportada")
 
 
@@ -786,6 +802,104 @@ def reports():
         ok = sum(1 for e in entregas if e.status == "ENTREGUE")
         motoristas.append({"nome": m.nome, "total": total, "entregues": ok, "taxa": round(ok/total*100,1) if total else 0})
     return render_template("reports.html", motoristas=motoristas)
+
+# =========================================================
+# PÁGINA DE MANUTENÇÃO 
+# =========================================================
+
+
+# =========================================================
+# Rota de listagem (ordenada por data) (continuação da Manutenção)
+# =========================================================
+
+
+@app.route("/manutencoes")
+def manutencoes_list():
+    """
+    Lista as manutenções, da mais recente para a mais antiga. Vai manter.
+    """
+    manutencoes = Manutencao.query.order_by(Manutencao.data_manutencao.desc()).all()
+
+    # Separa as que estão ABERTA ou EM ANDAMENTO
+    pendentes = [m for m in manutencoes if m.status_manutencao in ("ABERTA", "EM ANDAMENTO")]
+
+    return render_template(
+        "manutencoes/list.html",
+        manutencoes=manutencoes,
+        pendentes=pendentes
+    )
+
+
+@app.route("/manutencoes/novo", methods=["GET", "POST"])
+def manutencoes_novo():
+    """
+    Cadastra uma nova manutenção.
+
+    Operação CREATE do CRUD.
+    """
+    # Lista de veículos para a pessoa escolher no formulário
+    veiculos = Veiculo.query.order_by(Veiculo.placa).all()
+# Uso restrito
+    if request.method == "POST":
+        veiculo_id = request.form.get("veiculo_id", "").strip()
+        tipo_manutencao = request.form.get("tipo_manutencao", "").strip().upper()
+        data_manutencao = request.form.get("data_manutencao", "").strip()
+        quilometragem = request.form.get("quilometragem", "").strip()
+        descricao_manutencao = request.form.get("descricao_manutencao", "").strip().upper()
+        custo_manutencao = request.form.get("custo_manutencao", "").strip()
+        status_manutencao = request.form.get("status_manutencao", "").strip().upper() or "ABERTA"
+
+        # CORRIGIDO: valida veículo, tipo e data obrigatórios
+        if not veiculo_id or not tipo_manutencao or not data_manutencao:
+            flash("Veículo, tipo e data são obrigatórios.", "warning")
+            return render_template("manutencoes/form.html", manutencao=None, veiculos=veiculos)
+
+        try:
+            custo = Decimal(custo_manutencao or 0)
+
+            if custo < 0:
+                flash("O custo não pode ser negativo.", "warning")
+                return render_template("manutencoes/form.html", manutencao=None, veiculos=veiculos)
+
+            manutencao = Manutencao(
+                veiculo_id=int(veiculo_id),
+                tipo_manutencao=tipo_manutencao,
+                data_manutencao=date.fromisoformat(data_manutencao),  # texto vira data
+                quilometragem=int(quilometragem or 0),
+                descricao_manutencao=descricao_manutencao,
+                custo_manutencao=custo,
+                status_manutencao=status_manutencao
+            )
+
+            db.session.add(manutencao)
+            db.session.commit()
+
+            flash("Manutenção cadastrada com sucesso.", "success")
+
+            return redirect(url_for("manutencoes_list"))
+
+        except Exception as exc:
+            db.session.rollback()
+
+            flash(f"Não foi possível cadastrar a manutenção: {exc}", "danger")
+
+    return render_template("manutencoes/form.html", manutencao=None, veiculos=veiculos)
+
+
+
+@app.route("/manutencoes/<int:manutencao_id>")
+def manutencoes_view(manutencao_id):
+    """
+    Exibe os detalhes de uma manutenção.
+
+    Operação READ - visualização individual.
+    """
+    manutencao = db.get_or_404(Manutencao, manutencao_id)
+
+    return render_template(
+        "manutencoes/view.html",
+        manutencao=manutencao
+    )
 
 
 # =========================================================
