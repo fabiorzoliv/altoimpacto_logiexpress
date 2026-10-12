@@ -140,7 +140,8 @@
                                 ('pedidos', 'Pedidos'),
                                 ('rotas', 'Rotas'),
                                 ('entregas', 'Entregas'),
-                                ('ocorrencias', 'Ocorrências')
+                                ('ocorrencias', 'Ocorrências'),
+                                ('manutencoes', 'Manutenções')
                             ] %}
 
                                 <li>
@@ -261,7 +262,20 @@
                         </a>
 
                     </li>
+                      <!-- =========================================
+                         CONTROLE DE SLA
+                         ========================================= -->
 
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="{{ url_for('controle_sla') }}"
+                        >
+                            Controle de SLA
+                        </a>
+
+                    </li>
 
                     <!-- =========================================
                          INSTRUÇÕES - 29/09
