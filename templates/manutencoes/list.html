@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3">Manutenções</h1>
+        <p class="text-secondary">Manutenções cadastradas, da mais recente para a mais antiga.</p>
+    </div>
+    <a href="{{ url_for('manutencoes_novo') }}" class="btn btn-primary">+ Nova manutenção</a>
+</div>
+
+{% if pendentes %}
+<div class="alert alert-warning" role="alert">
+    <strong>{{ pendentes|length }} manutenção(ões) pendente(s).</strong>
+    Manutenções abertas ou em andamento precisam de acompanhamento.
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Veículo</th>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Quilometragem</th>
+                    <th>Custo</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for manutencao in manutencoes %}
+                <tr{% if manutencao.status_manutencao in ("ABERTA", "EM ANDAMENTO") %} class="table-warning"{% endif %}>
+                    <td>
+                        <a href="{{ url_for('manutencoes_view', manutencao_id=manutencao.id) }}">
+                            {{ manutencao.id }}
+                        </a>
+                    </td>
+                    <td>{{ manutencao.veiculo.placa }} — {{ manutencao.veiculo.modelo }}</td>
+                    <td>{{ manutencao.data_manutencao.strftime("%d/%m/%Y") }}</td>
+                    <td>{{ manutencao.tipo_manutencao }}</td>
+                    <td>{{ manutencao.quilometragem }} km</td>
+                    <td>R$ {{ "%.2f"|format(manutencao.custo_manutencao) }}</td>
+                    <td>
+                        <span class="badge {% if manutencao.status_manutencao in ('ABERTA', 'EM ANDAMENTO') %}text-bg-warning{% else %}text-bg-primary{% endif %}">
+                            {{ manutencao.status_manutencao }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center py-4">Nenhuma manutenção cadastrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

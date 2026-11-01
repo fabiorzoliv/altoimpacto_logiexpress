@@ -136,8 +136,11 @@ class Manutencao(db.Model):
     quilometragem = db.Column(db.Integer, nullable=False)
     descricao_manutencao = db.Column(db.String(255), nullable=False)
     custo_manutencao = db.Column(db.Numeric(10, 2), nullable=False)
-    status_manutencao = db.Column(db.String(30), nullable=False)
+    status_manutencao = db.Column(db.String(30), nullable=False, default="ABERTA")
     veiculo = db.relationship("Veiculo", backref="Manutencoes", lazy=True)
+
+
+MANUTENCAO_FORM_TEMPLATE = "manutencoes/form.html"
 
 
 MODEL_MAP = {
@@ -296,6 +299,15 @@ def dashboard():
     ).count()
 
     # =========================================================
+    # OPERAÇÃO - MANUTENÇÕES
+    # =========================================================
+
+    # Quantidade de manutenções pendentes (ABERTA ou EM ANDAMENTO)
+    manutencoes_pendentes = Manutencao.query.filter(
+        Manutencao.status_manutencao.in_(["ABERTA", "EM ANDAMENTO"])
+    ).count()
+
+    # =========================================================
     # RECURSOS - CLIENTES
     # =========================================================
 
@@ -417,6 +429,7 @@ def dashboard():
         atrasadas=atrasadas,
         criticas=criticas,
         ocorrencias=ocorrencias,
+        manutencoes_pendentes=manutencoes_pendentes,
 
         # -------------------------
         # Recursos
@@ -443,7 +456,12 @@ def dashboard():
         # Gráfico por motorista
         # -------------------------
         grafico_motorista_labels=grafico_motorista_labels,
-        grafico_motorista_valores=grafico_motorista_valores
+        grafico_motorista_valores=grafico_motorista_valores,
+
+        # -------------------------
+        # Gráfico das manutenções
+        # -------------------------
+        grafico_manutencao_labels=["ABERTA", "EM ANDAMENTO", "CONCLUÍDA"]
     )
 
 @app.route("/cadastros/<entity>")
@@ -456,6 +474,9 @@ def list_entity(entity):
     """
     if entity == "clientes":
         return redirect(url_for("clientes_list"))
+
+    if entity == "manutencoes":
+        return redirect(url_for("manutencoes_list"))
 
     if entity not in MODEL_MAP:
         return "Recurso não encontrado", 404
@@ -750,6 +771,9 @@ def new_entity(entity):
     if entity == "clientes":
         return redirect(url_for("clientes_novo"))
 
+    if entity == "manutencoes":
+        return redirect(url_for("manutencoes_novo"))
+
     if entity not in MODEL_MAP:
         return "Recurso não encontrado", 404
     model, title = MODEL_MAP[entity]
@@ -788,8 +812,22 @@ def build_entity_from_form(entity, model, record=None):
         return Entrega(pedido_id=int(data["pedido_id"]), motorista_id=int(data["motorista_id"]), veiculo_id=int(data["veiculo_id"]), rota_id=int(data["rota_id"]) if data.get("rota_id") else None, data_prevista=date.fromisoformat(data["data_prevista"]), data_entrega=date.fromisoformat(data["data_entrega"]) if data.get("data_entrega") else None, status=data["status"])
     if entity == "ocorrencias":
         return Ocorrencia(entrega_id=int(data["entrega_id"]), tipo=data["tipo"], descricao=data["descricao"], data=date.fromisoformat(data["data"]), status=data["status"])
-    if entity == "manutecoes":
-        return Manutencao(veiculo_id=int(data["veiculo_id"]), data_manutencao=date.fromisoformat(data["data_manutencao"]), quilometragem=int(data["quilometragem"]), descricao_manutencao=data["descricao_manutencao"], custo_manutencao=Decimal(data["custo_manutencao"]), status_manutencao=data["status_manutencao"])
+    if entity == "manutencoes":
+        tipo_manutencao = data["tipo_manutencao"].strip().upper()
+        status_manutencao = data.get("status_manutencao", "ABERTA").strip().upper() or "ABERTA"
+        if tipo_manutencao not in ("PREVENTIVA", "CORRETIVA", "EMERGENCIAL"):
+            raise ValueError("Tipo de manutenção inválido")
+        if status_manutencao not in ("ABERTA", "EM ANDAMENTO", "CONCLUÍDA"):
+            raise ValueError("Status de manutenção inválido")
+        return Manutencao(
+            veiculo_id=int(data["veiculo_id"]),
+            data_manutencao=date.fromisoformat(data["data_manutencao"]),
+            tipo_manutencao=tipo_manutencao,
+            quilometragem=int(data["quilometragem"]),
+            descricao_manutencao=data["descricao_manutencao"].strip(),
+            custo_manutencao=Decimal(data["custo_manutencao"]),
+            status_manutencao=status_manutencao
+        )
     raise ValueError("Entidade não suportada")
 
 
@@ -802,10 +840,6 @@ def reports():
         ok = sum(1 for e in entregas if e.status == "ENTREGUE")
         motoristas.append({"nome": m.nome, "total": total, "entregues": ok, "taxa": round(ok/total*100,1) if total else 0})
     return render_template("reports.html", motoristas=motoristas)
-
-# =========================================================
-# PÁGINA DE MANUTENÇÃO 
-# =========================================================
 
 
 # =========================================================
@@ -839,7 +873,12 @@ def manutencoes_novo():
     """
     # Lista de veículos para a pessoa escolher no formulário
     veiculos = Veiculo.query.order_by(Veiculo.placa).all()
-# Uso restrito
+
+    # Lista de tipos de manutenção para a pessoa escolher no formulário
+    tipos = ["PREVENTIVA", "CORRETIVA", "EMERGENCIAL"]
+    status_opcoes = ["ABERTA", "EM ANDAMENTO", "CONCLUÍDA"]
+
+    # Uso restrito
     if request.method == "POST":
         veiculo_id = request.form.get("veiculo_id", "").strip()
         tipo_manutencao = request.form.get("tipo_manutencao", "").strip().upper()
@@ -849,23 +888,75 @@ def manutencoes_novo():
         custo_manutencao = request.form.get("custo_manutencao", "").strip()
         status_manutencao = request.form.get("status_manutencao", "").strip().upper() or "ABERTA"
 
-        # CORRIGIDO: valida veículo, tipo e data obrigatórios
-        if not veiculo_id or not tipo_manutencao or not data_manutencao:
-            flash("Veículo, tipo e data são obrigatórios.", "warning")
-            return render_template("manutencoes/form.html", manutencao=None, veiculos=veiculos)
+        if not veiculo_id or not tipo_manutencao or not data_manutencao or not descricao_manutencao:
+            flash("Veículo, tipo, data e descrição são obrigatórios.", "warning")
+            return render_template(
+                MANUTENCAO_FORM_TEMPLATE,
+                manutencao=None,
+                veiculos=veiculos,
+                tipos=tipos,
+                status_opcoes=status_opcoes
+            )
+
+        if not db.session.get(Veiculo, int(veiculo_id)):
+            flash("O veículo selecionado não existe.", "warning")
+            return render_template(
+                MANUTENCAO_FORM_TEMPLATE,
+                manutencao=None,
+                veiculos=veiculos,
+                tipos=tipos,
+                status_opcoes=status_opcoes
+            )
+
+        if tipo_manutencao not in tipos:
+            flash("Tipo de manutenção inválido.", "warning")
+            return render_template(
+                MANUTENCAO_FORM_TEMPLATE,
+                manutencao=None,
+                veiculos=veiculos,
+                tipos=tipos,
+                status_opcoes=status_opcoes
+            )
+
+        if status_manutencao not in status_opcoes:
+            flash("Status de manutenção inválido.", "warning")
+            return render_template(
+                MANUTENCAO_FORM_TEMPLATE,
+                manutencao=None,
+                veiculos=veiculos,
+                tipos=tipos,
+                status_opcoes=status_opcoes
+            )
 
         try:
             custo = Decimal(custo_manutencao or 0)
 
+            quilometragem_numero = int(quilometragem or 0)
+            if quilometragem_numero < 0:
+                flash("A quilometragem não pode ser negativa.", "warning")
+                return render_template(
+                    MANUTENCAO_FORM_TEMPLATE,
+                    manutencao=None,
+                    veiculos=veiculos,
+                    tipos=tipos,
+                    status_opcoes=status_opcoes
+                )
+
             if custo < 0:
                 flash("O custo não pode ser negativo.", "warning")
-                return render_template("manutencoes/form.html", manutencao=None, veiculos=veiculos)
+                return render_template(
+                    MANUTENCAO_FORM_TEMPLATE,
+                    manutencao=None,
+                    veiculos=veiculos,
+                    tipos=tipos,
+                    status_opcoes=status_opcoes
+                )
 
             manutencao = Manutencao(
                 veiculo_id=int(veiculo_id),
                 tipo_manutencao=tipo_manutencao,
                 data_manutencao=date.fromisoformat(data_manutencao),  # texto vira data
-                quilometragem=int(quilometragem or 0),
+                quilometragem=quilometragem_numero,
                 descricao_manutencao=descricao_manutencao,
                 custo_manutencao=custo,
                 status_manutencao=status_manutencao
@@ -883,7 +974,13 @@ def manutencoes_novo():
 
             flash(f"Não foi possível cadastrar a manutenção: {exc}", "danger")
 
-    return render_template("manutencoes/form.html", manutencao=None, veiculos=veiculos)
+    return render_template(
+        MANUTENCAO_FORM_TEMPLATE,
+        manutencao=None,
+        veiculos=veiculos,
+        tipos=tipos,
+        status_opcoes=status_opcoes
+    )
 
 
 
