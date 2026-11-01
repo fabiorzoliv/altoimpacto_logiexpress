@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3">Nova manutenção</h1>
+                <p class="text-secondary">Cadastre uma manutenção para um veículo.</p>
+
+                <form method="post" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="veiculo_id" class="form-label">Veículo</label>
+                        <select id="veiculo_id" name="veiculo_id" class="form-select" required>
+                            <option value="">Selecione um veículo</option>
+                            {% for veiculo in veiculos %}
+                            <option value="{{ veiculo.id }}">{{ veiculo.placa }} — {{ veiculo.modelo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="tipo_manutencao" class="form-label">Tipo</label>
+                        <select id="tipo_manutencao" name="tipo_manutencao" class="form-select" required>
+                            <option value="">Selecione um tipo</option>
+                            {% for tipo in tipos %}
+                            <option value="{{ tipo }}">{{ tipo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="data_manutencao" class="form-label">Data</label>
+                        <input id="data_manutencao" name="data_manutencao" type="date" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="quilometragem" class="form-label">Quilometragem</label>
+                        <input id="quilometragem" name="quilometragem" type="number" min="0" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="custo_manutencao" class="form-label">Custo</label>
+                        <input id="custo_manutencao" name="custo_manutencao" type="number" min="0" step="0.01" value="0" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="status_manutencao" class="form-label">Status</label>
+                        <select id="status_manutencao" name="status_manutencao" class="form-select" required>
+                            {% for status in status_opcoes %}
+                            <option value="{{ status }}" {% if status == "ABERTA" %}selected{% endif %}>{{ status }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="descricao_manutencao" class="form-label">Descrição</label>
+                        <textarea id="descricao_manutencao" name="descricao_manutencao" class="form-control" rows="4" maxlength="255" required></textarea>
+                    </div>
+
+                    <div class="col-12 pt-2">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <a href="{{ url_for('manutencoes_list') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Manutenção #{{ manutencao.id }}</h1>
+        <p class="text-secondary mb-0">Detalhes da manutenção do veículo.</p>
+    </div>
+    <a href="{{ url_for('manutencoes_list') }}" class="btn btn-outline-secondary">Voltar</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header fw-semibold">Dados da manutenção</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Veículo</dt>
+            <dd class="col-sm-8">{{ manutencao.veiculo.placa }} — {{ manutencao.veiculo.modelo }}</dd>
+
+            <dt class="col-sm-4">Tipo</dt>
+            <dd class="col-sm-8">{{ manutencao.tipo_manutencao }}</dd>
+
+            <dt class="col-sm-4">Data</dt>
+            <dd class="col-sm-8">{{ manutencao.data_manutencao.strftime("%d/%m/%Y") }}</dd>
+
+            <dt class="col-sm-4">Quilometragem</dt>
+            <dd class="col-sm-8">{{ manutencao.quilometragem }} km</dd>
+
+            <dt class="col-sm-4">Custo</dt>
+            <dd class="col-sm-8">R$ {{ "%.2f"|format(manutencao.custo_manutencao) }}</dd>
+
+            <dt class="col-sm-4">Status</dt>
+            <dd class="col-sm-8"><span class="badge text-bg-primary">{{ manutencao.status_manutencao }}</span></dd>
+
+            <dt class="col-sm-4">Descrição</dt>
+            <dd class="col-sm-8">{{ manutencao.descricao_manutencao }}</dd>
+        </dl>
+    </div>
+</div>
+{% endblock %}
